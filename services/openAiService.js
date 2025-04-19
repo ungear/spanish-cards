@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import  {OPEN_AI_ORGANIZATION, OPEN_AI_PROJECT, OPEN_AI_API_KEY } from "./secret.js";
+import  {OPEN_AI_ORGANIZATION, OPEN_AI_PROJECT, OPEN_AI_API_KEY } from "../secret.js";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 

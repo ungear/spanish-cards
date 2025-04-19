@@ -1,4 +1,4 @@
-import { OpenAiService } from "./openAiService.js";
+import { OpenAiService } from "./services/openAiService.js";
 
 const service = new OpenAiService();
 
