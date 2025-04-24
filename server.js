@@ -22,6 +22,17 @@ fastify.register(fastifyStatic, {
 // Initialize database service
 const dbService = new DbService();
 
+// New endpoint to get all cards
+fastify.get('/api/card', async (request, reply) => {
+  try {
+    const cards = await dbService.getAllCards();
+    return cards;
+  } catch (error) {
+    fastify.log.error(`Error retrieving cards: ${error.message}`);
+    reply.status(500).send({ error: 'Failed to retrieve cards' });
+  }
+});
+
 fastify.get('/api/card/getArticle', async (request, reply) => {
   const word = request.query.word;
   if (!word) {
