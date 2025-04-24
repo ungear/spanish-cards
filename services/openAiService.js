@@ -29,7 +29,7 @@ export class OpenAiService{
           role: "developer",
           content: `
             You are a Spanish teacher. Your task is to answer, what grammatical gender have the provided nouns.
-            Answer only the single word "masculine", "feminine" or "no" if the provided word is not a noun.
+            Answer only the single word "el", "la" or "no" if the provided word is not a noun.
             `
         },
         {

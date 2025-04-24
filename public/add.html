@@ -21,6 +21,7 @@
         <div class="flex items-center space-x-2">
           <input id="spanish-word" type="text" placeholder="Spanish word" class="border border-gray-300 rounded px-2 py-1 w-full">
           <button id="get-translation-btn" type="submit" class="bg-blue-500 text-white px-4 py-1 rounded">Translate</button>
+          <button id="get-article-btn" type="button" class="bg-blue-500 text-white px-4 py-1 rounded">Add Article</button>
         </div>
         <div id="suggestions"></div>
         <div class="flex items-center space-x-2 mt-4">
@@ -63,6 +64,17 @@
       document.getElementById('translation').value = item.translation;
       document.getElementById('example').value = item.example;
     }
+
+    document.getElementById('get-article-btn').addEventListener('click', function() {
+      const inputElement = document.getElementById('spanish-word');
+      const inputValue = inputElement.value;
+      if (inputValue) {
+        fetch(`/api/card/getArticle?word=${inputValue}`)
+          .then(response => response.json())
+          .then(d => inputElement.value = `${d.article} ${inputValue}`)
+          .catch(error => console.error('Error:', error));
+      }
+    });
 
   </script>
 </body>
