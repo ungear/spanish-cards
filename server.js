@@ -3,6 +3,7 @@ import fastifyStatic from '@fastify/static';
 import path from 'path';
 import { fileURLToPath } from 'url'; // Import this to handle __dirname equivalent
 import { OpenAiService } from './services/openAiService.js';
+import { DbService } from './services/dbService.js';
 
 const PORT = 3000;
 
@@ -17,6 +18,9 @@ fastify.register(fastifyStatic, {
   root: path.join(__dirname, 'public'),
   //prefix: '/public/', // Optional: adds a prefix to access static files
 });
+
+// Initialize database service
+const dbService = new DbService();
 
 fastify.get('/api/card/getArticle', async (request, reply) => {
   const word = request.query.word;
@@ -48,8 +52,14 @@ fastify.post('/api/card', async (request, reply) => {
     return;
   }
 
-  console.log({ word, translation, example })
-  return { success: true };
+  try {
+    const cardId = dbService.saveCard(word, translation, example);
+    console.log(`Card saved with ID: ${cardId}`, { word, translation, example });
+    return { success: true, cardId };
+  } catch (error) {
+    fastify.log.error(`Error saving card: ${error.message}`);
+    reply.status(500).send({ error: 'Failed to save card' });
+  }
 });
 
 fastify.setNotFoundHandler((request, reply) => {
