@@ -40,6 +40,18 @@ fastify.get('/api/card/getTranslationSuggestions', async (request, reply) => {
   return suggestions;
 });
 
+fastify.post('/api/card', async (request, reply) => {
+  const { word, translation, example } = request.body;
+  
+  if (!word || !translation) {
+    reply.status(400).send('Missing required fields');
+    return;
+  }
+
+  console.log({ word, translation, example })
+  return { success: true };
+});
+
 fastify.setNotFoundHandler((request, reply) => {
   reply.status(404).send('Route not found');
 });

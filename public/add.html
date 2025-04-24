@@ -23,7 +23,7 @@
         </div>
         <div class="flex items-center space-x-2">
           <input id="spanish-word" type="text" placeholder="Spanish word" class="border border-gray-300 rounded px-2 py-1 w-full">
-          <button id="get-translation-btn" type="submit" class="bg-blue-500 text-white px-4 py-1 rounded">Translate</button>
+          <button id="get-translation-btn" type="button" class="bg-blue-500 text-white px-4 py-1 rounded">Translate</button>
         </div>
         <div id="suggestions"></div>
         <div class="flex items-center space-x-2 mt-4">
@@ -31,6 +31,9 @@
         </div>
         <div class="flex items-center space-x-2  mt-4">
           <input id="example" type="text" placeholder="Example" class="border border-gray-300 rounded px-2 py-1 w-full">
+        </div>
+        <div class="mt-4">
+          <button id="save-btn" type="submit" class="bg-green-500 text-white px-4 py-2 rounded w-full">Save</button>
         </div>
       </form>
     </section>
@@ -78,6 +81,44 @@
       }
     });
 
+    document.getElementById('save-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      const spanishWord = document.getElementById('spanish-word').value;
+      const translation = document.getElementById('translation').value;
+      const example = document.getElementById('example').value;
+      
+      if (spanishWord && translation) {
+        const cardData = {
+          word: spanishWord,
+          translation: translation,
+          example: example
+        };
+        
+        fetch('/api/card', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(cardData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          clearForm();
+        })
+        .catch(error => {
+          console.error('Error saving card:', error);
+          alert('Failed to save card. Please try again.');
+        });
+      } else {
+        alert('Please fill in at least the Spanish word and translation fields.');
+      }
+    });
+
+    function clearForm() {
+      document.getElementById('spanish-word').value = '';
+      document.getElementById('translation').value = '';
+      document.getElementById('example').value = '';
+    }
   </script>
 </body>
 </html>
