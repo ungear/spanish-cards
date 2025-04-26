@@ -11,7 +11,12 @@ if (!query) {
 
 try {
     const stmt = db.prepare(query);
-    const results = stmt.all();
+    let results;
+    if(query.toLowerCase().startsWith("alter")){
+        results = stmt.run();
+    } else{
+        results = stmt.all();
+    }
     console.log(JSON.stringify(results, null, 2));
 } catch (error) {
     console.error('Error executing query:', error.message);
