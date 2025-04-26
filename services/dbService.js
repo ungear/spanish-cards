@@ -11,8 +11,6 @@ export class DbService {
   constructor() {
     try {
       const dataDir = path.join(__dirname, '..', 'data');
-      console.log(dataDir);
-      console.log(dbPath);
       if (!fs.existsSync(dataDir)) {
         fs.mkdirSync(dataDir, { recursive: true });
       }
