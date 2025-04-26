@@ -19,23 +19,6 @@ export class DbService {
     }
 
     this.db = new Database(dbPath);
-    this.initDatabase();
-  }
-
-  initDatabase() {
-    // Create directory if it doesn't exist
-   
-
-    // Create tables if they don't exist
-    this.db.exec(`
-      CREATE TABLE IF NOT EXISTS cards (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        word TEXT NOT NULL,
-        translation TEXT NOT NULL,
-        example TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
   }
 
   saveCard(word, translation, example) {
