@@ -50,12 +50,20 @@
     function trainCard(container, card, onResult){
       container.innerHTML = `
         <div>${card.word}</div>
-        <div id="answer">***</div>
+        <div id="answer"></div>
+        <div id="example"></div> 
+        <button id="show" type="button">Show</button>
         <button id="repeat" type="button">Repeat</button>
         <button id="know" type="button">I know</button>
       `;
       container.querySelector("#repeat").addEventListener("click", () => {onResult(false)});
       container.querySelector("#know").addEventListener("click", () => {onResult(true)});
+      container.querySelector("#show").addEventListener("click", onShowClick);
+
+      function onShowClick(){
+        container.querySelector("#answer").innerText = card.translation;
+        container.querySelector("#example").innerText = card.example;
+      }
     }
 
     function completeTraining(container){
