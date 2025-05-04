@@ -23,19 +23,20 @@
 
   <script lang="javascript">
     document.addEventListener("DOMContentLoaded", () => {
-    fetch('/api/card')
-      .then(response => response.json())
-      .then(cards => {
-        const wordsDiv = document.getElementById('words');
-        wordsDiv.innerHTML = cards.map(card => `
-          <tr class="border-b border-gray-300">
-            <td class="py-2 px-4 font-bold">${card.word}</td>
-            <td class="py-2 px-4 text-gray-600">${card.translation}</td>
-            <td class="py-2 px-4 text-gray-500 italic">${card.example || ''}</td>
-          </tr>
-        `).join('');
-      })
-      .catch(error => console.error('Error fetching cards:', error));
+      fetch('/api/card')
+        .then(response => response.json())
+        .then(cards => {
+          const wordsDiv = document.getElementById('words');
+          wordsDiv.innerHTML = cards.map(card => `
+            <tr class="border-b border-gray-300">
+              <td class="py-2 px-4 font-bold">${card.word}</td>
+              <td class="py-2 px-4 font-bold">${card.level}</td>
+              <td class="py-2 px-4 text-gray-600">${card.translation}</td>
+              <td class="py-2 px-4 text-gray-500 italic">${card.example || ''}</td>
+            </tr>
+          `).join('');
+        })
+        .catch(error => console.error('Error fetching cards:', error));
     })
   </script>
 </body>

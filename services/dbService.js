@@ -29,7 +29,20 @@ export class DbService {
     return result.lastInsertRowid;
   }
 
+  updateCardLevel(id, newLevel, newRepeatDate) {
+    const stmt = this.db.prepare(
+      'UPDATE cards SET level = ?, next_repeat = datetime(?) WHERE id = ?'
+    );
+    const result = stmt.run(newLevel, newRepeatDate.toISOString(), id);
+    return result.changes;
+  }
+
   getAllCards() {
     return this.db.prepare('SELECT * FROM cards ORDER BY created_at DESC').all();
+  }
+
+  getCardsToTrain() {
+    const now = new Date().toISOString();
+    return this.db.prepare('SELECT * FROM cards WHERE next_repeat < ? ORDER BY next_repeat ASC').all(now);
   }
 }

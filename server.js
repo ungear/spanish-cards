@@ -73,6 +73,50 @@ fastify.post('/api/card', async (request, reply) => {
   }
 });
 
+fastify.get('/api/training', async (request, reply) => {
+  try {
+    const cards = await dbService.getCardsToTrain();
+    return cards;
+  } catch (error) {
+    fastify.log.error(`Error retrieving cards: ${error.message}`);
+    reply.status(500).send({ error: 'Failed to create training' });
+  }
+});
+
+fastify.post('/api/training/cardLevelup', async (request, reply) => {
+  const { id, level } = request.body;
+  if (!id || typeof level === "undefined") {
+    reply.status(400).send('Missing required fields');
+    return;
+  }
+
+  const newLevel = level + 1;
+  const now = new Date();
+  let newRepeatDate;
+  
+  switch(newLevel) {
+    case 1:
+      newRepeatDate = new Date(now.getTime() + (24 * 60 * 60 * 1000)); // +1 day
+      break;
+    case 2:
+      newRepeatDate = new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000)); // +3 days
+      break;
+    case 3:
+      newRepeatDate = new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)); // +7 days
+      break;
+    default:
+      newRepeatDate = now;
+  }
+
+  try {
+    const cards = await dbService.updateCardLevel(id, newLevel, newRepeatDate);
+    return cards;
+  } catch (error) {
+    fastify.log.error(`Error upgrading card: ${error.message}`);
+    reply.status(500).send({ error: 'Failed to upgrade the card' });
+  }
+});
+
 fastify.setNotFoundHandler((request, reply) => {
   reply.status(404).send('Route not found');
 });
