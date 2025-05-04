@@ -37,7 +37,9 @@
       trainCard(container, cards[cardIndex], onCardTrained);
       
       function onCardTrained(isSuccess){
-        sendCardSuccess(cards[cardIndex]);
+        if(isSuccess) {
+          sendCardSuccess(cards[cardIndex]);
+        }  
         cardIndex++;
         if(cards[cardIndex])
           trainCard(container, cards[cardIndex], onCardTrained);
@@ -49,12 +51,18 @@
 
     function trainCard(container, card, onResult){
       container.innerHTML = `
-        <div>${card.word}</div>
-        <div id="answer"></div>
-        <div id="example"></div> 
-        <button id="show" type="button">Show</button>
-        <button id="repeat" type="button">Repeat</button>
-        <button id="know" type="button">I know</button>
+        <div id="training-card" class="border border-gray-300 rounded-lg p-4 flex flex-col" style="width: 300px; height: 500px;">
+          <div class="text-2xl font-bold mb-4 text-center">${card.word}</div>
+          <div id="answer" class="mb-4"></div>
+          <div id="example" class="mb-4"></div> 
+          <div class="mt-auto space-y-2">
+            <button id="show" type="button" class="w-full bg-blue-500 text-white px-4 py-2 rounded">Show</button>
+            <div class="flex justify-between space-x-2">
+              <button id="repeat" type="button" class="w-1/2 bg-red-500 text-white px-4 py-2 rounded">Repeat</button>
+              <button id="know" type="button" class="w-1/2 bg-green-500 text-white px-4 py-2 rounded">I know</button>
+            </div>
+          </div>
+        </div>
       `;
       container.querySelector("#repeat").addEventListener("click", () => {onResult(false)});
       container.querySelector("#know").addEventListener("click", () => {onResult(true)});
