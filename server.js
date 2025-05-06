@@ -4,8 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url'; // Import this to handle __dirname equivalent
 import { OpenAiService } from './services/openAiService.js';
 import { DbService } from './services/dbService.js';
-
-const PORT = 3000;
+import {PORT} from './settings.js';
 
 // Create __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
