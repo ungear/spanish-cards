@@ -12,7 +12,7 @@ if (!query) {
 try {
     const stmt = db.prepare(query);
     let results;
-    if(query.toLowerCase().startsWith("alter")){
+    if(query.toLowerCase().startsWith("alter") || query.toLowerCase().startsWith("update")){
         results = stmt.run();
     } else{
         results = stmt.all();
