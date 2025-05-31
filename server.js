@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url'; // Import this to handle __dirname equivale
 import { OpenAiService } from './services/openAiService.js';
 import { DbService } from './services/dbService.js';
 import {PORT} from './settings.js';
-
+import { levelupCard } from './services/trainingService.js';
 // Create __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -89,23 +89,7 @@ fastify.post('/api/training/cardLevelup', async (request, reply) => {
     return;
   }
 
-  const newLevel = level + 1;
-  const now = new Date();
-  let newRepeatDate;
-  
-  switch(newLevel) {
-    case 1:
-      newRepeatDate = new Date(now.getTime() + (24 * 60 * 60 * 1000)); // +1 day
-      break;
-    case 2:
-      newRepeatDate = new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000)); // +3 days
-      break;
-    case 3:
-      newRepeatDate = new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)); // +7 days
-      break;
-    default:
-      newRepeatDate = now;
-  }
+  const {newLevel, newRepeatDate} = levelupCard(level);
 
   try {
     const cards = await dbService.updateCardLevel(id, newLevel, newRepeatDate);
