@@ -42,21 +42,26 @@
   </main>
 
   <script lang="javascript">
+    function disableButtonWhileLoading(button, promise) {
+      button.dataset.originalText = button.innerText;
+      button.innerText = 'Loading...';
+      button.disabled = true;
+      promise.finally(() => {
+        button.innerText = button.dataset.originalText;
+        button.disabled = false;
+      });
+    }
+
     document.getElementById('get-translation-btn').addEventListener('click', function(event) {
       event.preventDefault(); // Prevent form submission
       const input = document.getElementById('spanish-word').value;
       if (input) {
-        this.dataset.originalText = this.innerText;
-        this.innerText = 'Loading...';
-        this.disabled = true;
-        fetch(`/api/card/getTranslationSuggestions?word=${input}`)
+        const promise = fetch(`/api/card/getTranslationSuggestions?word=${input}`)
           .then(response => response.json())
           .then(d => populateSuggestions(d.suggestions))
-          .catch(error => console.error('Error:', error))
-          .finally(() => {
-            this.innerText = this.dataset.originalText;
-            this.disabled = false;
-          });
+          .catch(error => console.error('Error:', error));
+
+        disableButtonWhileLoading(this, promise);
       }
     });
 
@@ -83,17 +88,12 @@
       const inputElement = document.getElementById('spanish-word');
       const inputValue = inputElement.value;
       if (inputValue) {
-        this.dataset.originalText = this.innerText;
-        this.innerText = 'Loading...';
-        this.disabled = true;
-        fetch(`/api/card/getArticle?word=${inputValue}`)
+        const promise = fetch(`/api/card/getArticle?word=${inputValue}`)
           .then(response => response.json())
           .then(d => inputElement.value = `${d.article} ${inputValue}`)
-          .catch(error => console.error('Error:', error))
-          .finally(() => {
-            this.innerText = this.dataset.originalText;
-            this.disabled = false;
-          });
+          .catch(error => console.error('Error:', error));
+        
+        disableButtonWhileLoading(this, promise);
       }
     });
 
@@ -110,10 +110,7 @@
           example: example
         };
         
-        this.dataset.originalText = this.innerText;
-        this.innerText = 'Loading...';
-        this.disabled = true;
-        fetch('/api/card', {
+        const promise = fetch('/api/card', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -127,11 +124,9 @@
         .catch(error => {
           console.error('Error saving card:', error);
           alert('Failed to save card. Please try again.');
-        })
-        .finally(() => {
-          this.innerText = this.dataset.originalText;
-          this.disabled = false;
         });
+        
+        disableButtonWhileLoading(this, promise);
       } else {
         alert('Please fill in at least the Spanish word and translation fields.');
       }
