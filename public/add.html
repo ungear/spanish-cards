@@ -41,17 +41,8 @@
     </section>
   </main>
 
+  <script src="utils.js"></script>
   <script lang="javascript">
-    function disableButtonWhileLoading(button, promise) {
-      button.dataset.originalText = button.innerText;
-      button.innerText = 'Loading...';
-      button.disabled = true;
-      promise.finally(() => {
-        button.innerText = button.dataset.originalText;
-        button.disabled = false;
-      });
-    }
-
     document.getElementById('get-translation-btn').addEventListener('click', function(event) {
       event.preventDefault(); // Prevent form submission
       const input = document.getElementById('spanish-word').value;
