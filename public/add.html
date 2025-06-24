@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spanish Cards - Add</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="general.css">
 </head>
 <body>
   <header class="bg-gray-500 h-12"></header>
@@ -24,7 +25,7 @@
         </div>
         <div class="flex items-center space-x-2">
           <input id="spanish-word" type="text" placeholder="Spanish word" class="border border-gray-300 rounded px-2 py-1 w-full">
-          <button id="get-translation-btn" type="button" class="bg-blue-500 text-white px-4 py-1 rounded">Translate</button>
+          <button id="get-translation-btn" type="button" class="bg-blue-500 text-white px-4 py-1 rounded disabled:border-gray-200 disabled:bg-gray-50">Translate</button>
         </div>
         <div id="suggestions"></div>
         <div class="flex items-center space-x-2 mt-4">
@@ -45,10 +46,17 @@
       event.preventDefault(); // Prevent form submission
       const input = document.getElementById('spanish-word').value;
       if (input) {
+        this.dataset.originalText = this.innerText;
+        this.innerText = 'Loading...';
+        this.disabled = true;
         fetch(`/api/card/getTranslationSuggestions?word=${input}`)
           .then(response => response.json())
           .then(d => populateSuggestions(d.suggestions))
-          .catch(error => console.error('Error:', error));
+          .catch(error => console.error('Error:', error))
+          .finally(() => {
+            this.innerText = this.dataset.originalText;
+            this.disabled = false;
+          });
       }
     });
 
@@ -75,10 +83,17 @@
       const inputElement = document.getElementById('spanish-word');
       const inputValue = inputElement.value;
       if (inputValue) {
+        this.dataset.originalText = this.innerText;
+        this.innerText = 'Loading...';
+        this.disabled = true;
         fetch(`/api/card/getArticle?word=${inputValue}`)
           .then(response => response.json())
           .then(d => inputElement.value = `${d.article} ${inputValue}`)
-          .catch(error => console.error('Error:', error));
+          .catch(error => console.error('Error:', error))
+          .finally(() => {
+            this.innerText = this.dataset.originalText;
+            this.disabled = false;
+          });
       }
     });
 
@@ -95,6 +110,9 @@
           example: example
         };
         
+        this.dataset.originalText = this.innerText;
+        this.innerText = 'Loading...';
+        this.disabled = true;
         fetch('/api/card', {
           method: 'POST',
           headers: {
@@ -109,6 +127,10 @@
         .catch(error => {
           console.error('Error saving card:', error);
           alert('Failed to save card. Please try again.');
+        })
+        .finally(() => {
+          this.innerText = this.dataset.originalText;
+          this.disabled = false;
         });
       } else {
         alert('Please fill in at least the Spanish word and translation fields.');
