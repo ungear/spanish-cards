@@ -45,4 +45,8 @@ export class DbService {
     const now = new Date().toISOString();
     return this.db.prepare('SELECT * FROM cards WHERE next_repeat < ? ORDER BY next_repeat ASC').all(now);
   }
+  resetAllCards() {
+    const now = new Date().toISOString();
+    return this.db.prepare('UPDATE cards SET level = 0, next_repeat = datetime(?)').run(now);
+  }
 }

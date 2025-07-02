@@ -72,6 +72,16 @@ fastify.post('/api/card', async (request, reply) => {
   }
 });
 
+fastify.post('/api/card/resetAll', async (request, reply) => {
+  try {
+    await dbService.resetAllCards();
+    return { success: true };
+  } catch (error) {
+    fastify.log.error(`Error resetting cards: ${error.message}`);
+    reply.status(500).send({ error: 'Failed to reset cards' });
+  }
+});
+
 fastify.get('/api/training', async (request, reply) => {
   try {
     const cards = await dbService.getCardsToTrain();

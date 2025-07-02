@@ -18,12 +18,28 @@
       </ul>
     </nav>
     <section class="overflow-x-auto">
+      <section class="p-4">
+        <button id="resetAll" class="bg-red-500 text-white px-4 py-2 rounded-md">Reset All</button>
+      </section>
       <table id="words"></table>
     </section>
   </main>
 
+  <script src="utils.js"></script>
   <script lang="javascript">
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", loadAllCards)
+
+    document.getElementById('resetAll').addEventListener('click', () => {
+      const promise =  fetch('/api/card/resetAll', {
+        method: 'POST',
+      })
+      .then(loadAllCards)
+      .catch(error => console.error('Error resetting cards:', error));
+
+      disableButtonWhileLoading(this, promise);
+    });
+
+    function loadAllCards(){
       fetch('/api/card')
         .then(response => response.json())
         .then(cards => {
@@ -39,7 +55,7 @@
           `).join('');
         })
         .catch(error => console.error('Error fetching cards:', error));
-    })
+    }
   </script>
 </body>
 </html> 
