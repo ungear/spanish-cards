@@ -31,6 +31,7 @@
       fetch('/api/training')
         .then(response => response.json())
         .then(cards => {
+          radnomizeArray(cards);
           startTraining(cards, isReverse);
         })
         .catch(error => console.error('Error fetching cards:', error));
@@ -96,6 +97,10 @@
         //   startTraining(cards);
         // })
         // .catch(error => console.error('Error fetching cards:', error));
+    }
+
+    function radnomizeArray(array){
+      array.sort(() => Math.random() - 0.5);
     }
   </script>
 </body>
