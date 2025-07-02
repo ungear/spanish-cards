@@ -14,6 +14,7 @@
         <li><a href="/list.html" class="text-blue-500">List</a></li>
         <li><a href="/add.html" class="text-blue-500">Add</a></li>
         <li><a href="/training.html" class="text-blue-500">Training</a></li>
+        <li><a href="/training.html?mode=reverse" class="text-blue-500">Reverse</a></li>
       </ul>
     </nav>
     <section class="p-4">
@@ -23,18 +24,21 @@
 
   <script lang="javascript">
     const container = document.getElementById("training");
+    const urlParams = new URLSearchParams(window.location.search);
+    const isReverse = urlParams.get('mode') === 'reverse';
+    
     document.addEventListener("DOMContentLoaded", () => {
       fetch('/api/training')
         .then(response => response.json())
         .then(cards => {
-          startTraining(cards);
+          startTraining(cards, isReverse);
         })
         .catch(error => console.error('Error fetching cards:', error));
     })
 
-    function startTraining(cards){
+    function startTraining(cards, isReverse){
       let cardIndex = 0;
-      trainCard(container, cards[cardIndex], onCardTrained);
+      trainCard(container, cards[cardIndex], onCardTrained, isReverse);
       
       function onCardTrained(isSuccess){
         if(isSuccess) {
@@ -42,18 +46,18 @@
         }  
         cardIndex++;
         if(cards[cardIndex])
-          trainCard(container, cards[cardIndex], onCardTrained);
+          trainCard(container, cards[cardIndex], onCardTrained, isReverse);
         else
         completeTraining(container)
       }
       
     }
 
-    function trainCard(container, card, onResult){
+    function trainCard(container, card, onResult, isReverse = false){ 
       container.innerHTML = `
         <div id="training-card" class="border border-gray-300 rounded-lg p-4 flex flex-col" style="width: 300px; height: 500px;">
           <div class="mb-1 w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center">${card.level}</div>
-          <div class="text-2xl font-bold mb-4 text-center">${card.word}</div>
+          <div class="text-2xl font-bold mb-4 text-center">${isReverse ? card.translation : card.word}</div>
           <div id="answer" class="mb-4"></div>
           <div id="example" class="mb-4"></div> 
           <div class="mt-auto space-y-2">
@@ -70,7 +74,7 @@
       container.querySelector("#show").addEventListener("click", onShowClick);
 
       function onShowClick(){
-        container.querySelector("#answer").innerText = card.translation;
+        container.querySelector("#answer").innerText = isReverse ? card.word : card.translation;  
         container.querySelector("#example").innerText = card.example;
       }
     }
