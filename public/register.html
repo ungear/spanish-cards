@@ -9,11 +9,19 @@
   <header class="bg-gray-500 h-12"></header>
   
   <main>
-    <form id="loginForm" method="post" action="/api/user">
-      <input type="text" id="name" name="name" placeholder="Name">
-      <input type="email" id="email" name="email" placeholder="Email">
-      <input type="password" id="password" name="password" placeholder="Password">
-      <button type="submit">Register</button>
+    <form id="loginForm" method="post" action="/api/user" class="max-w-xs mt-4">
+      <div class="flex items-center space-x-2">
+        <input class="border border-gray-300 rounded px-2 py-1 w-full mb-2" type="text" id="name" name="name" placeholder="Name">
+      </div>
+      <div class="flex items-center space-x-2">
+        <input class="border border-gray-300 rounded px-2 py-1 w-full mb-2" type="email" id="email" name="email" placeholder="Email">
+      </div>
+      <div class="flex items-center space-x-2">
+        <input class="border border-gray-300 rounded px-2 py-1 w-full" type="password" id="password" name="password" placeholder="Password">
+      </div>
+      <div class="mt-4">
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded w-full">Register</button>
+      </div>
     </form>
   </main>
 </body>
