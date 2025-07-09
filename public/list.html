@@ -40,20 +40,43 @@
 
   <script src="utils.js"></script>
   <script lang="javascript">
-    let cards = [];
-    const sorting = {
-      column: 'word',
-      order: 'asc'
-    };
-    const eventBus = new EventTarget();
+    class State extends EventTarget{
+      constructor(){
+        super();
+        this._cards = [];
+        this._sorting = {
+          column: 'word',
+          order: 'asc'
+        };
+        this.events = {
+          cardsLoaded: 'cardsLoaded',
+          sortingChanged: 'sortingChanged'
+        }
+      }
+      get cards(){
+        return this._cards;
+      }
+      set cards(value){
+        this._cards = value;
+        this.dispatchEvent(new Event(this.events.cardsLoaded));
+      } 
+      get sorting(){
+        return this._sorting;
+      }
+      set sorting(value){
+        this._sorting = value;
+        this.dispatchEvent(new Event(this.events.sortingChanged));
+      }
+    }
+    const state = new State();
 
-    eventBus.addEventListener('cardsLoaded', (event) => {
-      renderRows(cards);
+    state.addEventListener(state.events.cardsLoaded, (event) => {
+      renderRows(state.cards);
     });
 
-    eventBus.addEventListener('sortingChanged', (event) => {
-      sortCards(cards, sorting.column, sorting.order);
-      renderRows(cards);
+    state.addEventListener(state.events.sortingChanged, (event) => {
+      sortCards(state.cards, state.sorting.column, state.sorting.order);
+      renderRows(state.cards);
     });
 
     document.addEventListener("DOMContentLoaded", loadAllCards)
@@ -73,9 +96,10 @@
     function onHeaderClick(event){
       if(event.target.dataset.sortingColumn){
         const column = event.target.dataset.sortingColumn;
+        const sorting = state.sorting;
         sorting.column = column;
-        sorting.order = sorting.order === 'asc' ? 'desc' : 'asc';
-        eventBus.dispatchEvent(new Event('sortingChanged'));
+        sorting.order = state.sorting.order === 'asc' ? 'desc' : 'asc';
+        state.sorting = sorting;
       }
     }
 
@@ -83,8 +107,7 @@
       fetch('/api/card')
         .then(response => response.json())
         .then(response => {
-          cards = response;
-          eventBus.dispatchEvent(new Event('cardsLoaded'));
+          state.cards = response;
         })
         .catch(error => console.error('Error fetching cards:', error));
     }
