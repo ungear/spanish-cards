@@ -23,16 +23,16 @@
         <button id="resetAll" class="bg-red-500 text-white text-sm px-2 py-0.5 rounded-md">Reset All</button>
       </section>
       <table>
-        <thead class="bg-gray-200">
+        <thead class="bg-gray-200" id="gridHeader">
           <tr>
-            <th class="py-2 px-4 font-bold">Word</th>
-            <th class="py-2 px-4 font-bold">Level</th>
-            <th class="py-2 px-4 font-bold">Next Repeat</th>
-            <th class="py-2 px-4 font-bold">Translation</th>
-            <th class="py-2 px-4 font-bold">Example</th>
+            <th class="py-2 px-4 font-bold cursor-pointer" data-sorting-column="word">Word</th> 
+            <th class="py-2 px-4 font-bold cursor-pointer" data-sorting-column="level">Level</th>
+            <th class="py-2 px-4 font-bold cursor-pointer" data-sorting-column="next_repeat">Next Repeat</th>
+            <th class="py-2 px-4 font-bold cursor-pointer" data-sorting-column="translation">Translation</th>
+            <th class="py-2 px-4 font-bold cursor-pointer" data-sorting-column="example">Example</th>
           </tr>
         </thead>  
-        <tbody id="words">
+        <tbody id="gridBody">
         </tbody>
       </table>
     </section>
@@ -40,7 +40,15 @@
 
   <script src="utils.js"></script>
   <script lang="javascript">
+    let cards = [];
+    const sorting = {
+      column: 'word',
+      order: 'asc'
+    };
+
     document.addEventListener("DOMContentLoaded", loadAllCards)
+
+    document.getElementById('gridHeader').addEventListener('click', onHeaderClick);
 
     document.getElementById('resetAll').addEventListener('click', () => {
       const promise =  fetch('/api/card/resetAll', {
@@ -52,22 +60,49 @@
       disableButtonWhileLoading(this, promise);
     });
 
+    function onHeaderClick(event){
+      if(event.target.dataset.sortingColumn){
+        const column = event.target.dataset.sortingColumn;
+        sorting.column = column;
+        sorting.order = sorting.order === 'asc' ? 'desc' : 'asc';
+        sortCards(cards, sorting.column, sorting.order);
+        renderRows(cards);
+      }
+    }
+
     function loadAllCards(){
       fetch('/api/card')
         .then(response => response.json())
-        .then(cards => {
-          const wordsDiv = document.getElementById('words');
-          wordsDiv.innerHTML = cards.map(card => `
-            <tr class="border-b border-gray-300">
-              <td class="py-2 px-4 font-bold">${card.word}</td>
-              <td class="py-2 px-4 font-bold">${card.level}</td>
-              <td class="py-2 px-4 font-bold">${card.next_repeat}</td>
-              <td class="py-2 px-4 text-gray-600">${card.translation}</td>
-              <td class="py-2 px-4 text-gray-500 italic">${card.example || ''}</td>
-            </tr>
-          `).join('');
+        .then(response => {
+          cards = response;
+          sortCards(cards, sorting.column, sorting.order);
+          renderRows(cards);
         })
         .catch(error => console.error('Error fetching cards:', error));
+    }
+
+    function sortCards(cards, column, order){
+      cards.sort((a, b) => {
+        if(a[column] === b[column]) return 0;
+        if (order === 'asc') {
+          return a[column] < b[column] ? -1 : 1 ;
+        } else {
+          return b[column] < a[column] ? -1 : 1;
+        }
+      });
+    }
+
+    function renderRows(cards){
+      const wordsDiv = document.getElementById('gridBody');
+      wordsDiv.innerHTML = cards.map(card => `
+        <tr class="border-b border-gray-300">
+          <td class="py-2 px-4 font-bold">${card.word}</td>
+          <td class="py-2 px-4 font-bold">${card.level}</td>
+          <td class="py-2 px-4 font-bold">${card.next_repeat}</td>
+          <td class="py-2 px-4 text-gray-600">${card.translation}</td>
+          <td class="py-2 px-4 text-gray-500 italic">${card.example || ''}</td>
+        </tr>
+      `).join('');
     }
   </script>
 </body>
