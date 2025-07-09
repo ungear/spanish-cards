@@ -1,0 +1,10 @@
+.list-content {
+  margin: 0 auto;
+  width: 1000px;
+}
+
+@media screen and (max-width: 1024px) {
+  .list-content {
+    width: 100%;
+  }
+}
