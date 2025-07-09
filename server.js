@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyCookie from '@fastify/cookie';
+import fastifyFormBody from '@fastify/formbody';
 import path from 'path';
 import { fileURLToPath } from 'url'; // Import this to handle __dirname equivalent
 import { OpenAiService } from './services/openAiService.js';
@@ -24,6 +25,7 @@ fastify.register(fastifyCookie, {
   hook: 'preValidation',
   //secret: "my-secret",
 })
+fastify.register(fastifyFormBody);
 
 fastify.addHook('preValidation', async (request, reply) => {
   if (request.routeOptions.config?.requireAuth) {
@@ -143,8 +145,8 @@ fastify.post('/api/user', async (request, reply) => {
   }
 
   try {
-    const userId = await userService.createUser(name, email, password, dbService);
-    return userId;
+    await userService.createUser(name, email, password, dbService);
+    reply.redirect('/login.html');
   } catch (error) {
     fastify.log.error(`Error creating user: ${error.message}`);
     reply.status(500).send({ error: 'Failed to create user' });
@@ -171,7 +173,7 @@ fastify.post('/api/user/login', async (request, reply) => {
       maxAge: 60 * 60 * 24 * 30,
       signed: false,
     });
-    return authData.userData;
+    reply.redirect('/index.html');
   } catch (error) {
     fastify.log.error(`Error logging in user: ${error.message}`);
     reply.status(500).send({ error: 'Failed to login user' });
