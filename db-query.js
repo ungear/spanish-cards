@@ -36,6 +36,7 @@ try {
         || queryToExecute.toLowerCase().startsWith("insert")
         || queryToExecute.toLowerCase().startsWith("delete")
         || queryToExecute.toLowerCase().startsWith("create")
+        || queryToExecute.toLowerCase().startsWith("drop")
     ){
         results = stmt.run();
     } else{
