@@ -60,4 +60,10 @@ export class DbService {
     const result = stmt.get(email, password);
     return result;
   }
+
+  getUserById(id) {
+    const stmt = this.db.prepare('SELECT * FROM users WHERE id = ?');
+    const result = stmt.get(id);
+    return result;
+  }
 }

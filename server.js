@@ -135,6 +135,17 @@ fastify.post('/api/training/cardLevelup', async (request, reply) => {
   }
 });
 
+fastify.get('/api/user/logout', async (request, reply) => {
+  reply.clearCookie(AUTH_COOKIE_NAME);
+  reply.redirect('/index.html');
+});
+
+fastify.get('/api/user/current', { config: { requireAuth: true } }, async (request, reply) => {
+  const userId = request.userId;
+  const user = await dbService.getUserById(userId);
+  return user;
+});
+
 // create user
 fastify.post('/api/user', async (request, reply) => {
   const { name, email, password } = request.body;
