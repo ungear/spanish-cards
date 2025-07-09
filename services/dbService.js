@@ -49,4 +49,15 @@ export class DbService {
     const now = new Date().toISOString();
     return this.db.prepare('UPDATE cards SET level = 0, next_repeat = datetime(?)').run(now);
   }
+  createUser(name, email, password) {
+    const stmt = this.db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
+    const result = stmt.run(name, email, password);
+    return result.lastInsertRowid;
+  }
+  
+  getUserByPassword(email, password) {
+    const stmt = this.db.prepare('SELECT * FROM users WHERE email = ? AND password = ?');
+    const result = stmt.get(email, password);
+    return result;
+  }
 }
