@@ -203,6 +203,7 @@ fastify.get('/api/card/getTranslationSuggestions', {
 });
 
 fastify.post('/api/card', {
+  config: { requireAuth: true },
   schema: {
     tags: ['cards'],
     summary: 'Create a new card',
@@ -238,15 +239,16 @@ fastify.post('/api/card', {
   }
 }, async (request, reply) => {
   const { word, translation, example } = request.body;
-  
+  const userId = request.userId;
+
   if (!word || !translation) {
     reply.status(400).send('Missing required fields');
     return;
   }
 
   try {
-    const cardId = dbService.saveCard(word, translation, example);
-    console.log(`Card saved with ID: ${cardId}`, { word, translation, example });
+    const cardId = dbService.saveCard(word, translation, example, userId);
+    console.log(`Card saved with ID: ${cardId}`, { word, translation, example, userId });
     return { success: true, cardId };
   } catch (error) {
     fastify.log.error(`Error saving card: ${error.message}`);

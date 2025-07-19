@@ -21,11 +21,11 @@ export class DbService {
     this.db = new Database(dbPath);
   }
 
-  saveCard(word, translation, example) {
+  saveCard(word, translation, example, userId) {
     const stmt = this.db.prepare(
-      'INSERT INTO cards (word, translation, example) VALUES (?, ?, ?)'
+      'INSERT INTO cards (word, translation, example, user_id) VALUES (?, ?, ?, ?)'
     );
-    const result = stmt.run(word, translation, example || null);
+    const result = stmt.run(word, translation, example || null, userId);
     return result.lastInsertRowid;
   }
 
