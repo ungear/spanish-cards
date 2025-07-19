@@ -287,6 +287,7 @@ fastify.post('/api/card/resetAll', {
 });
 
 fastify.get('/api/training', {
+  config: { requireAuth: true },
   schema: {
     tags: ['training'],
     summary: 'Get cards for training',
@@ -316,7 +317,8 @@ fastify.get('/api/training', {
   }
 }, async (request, reply) => {
   try {
-    const cards = await dbService.getCardsToTrain();
+    const userId = request.userId;
+    const cards = await dbService.getCardsToTrain(userId);
     return cards;
   } catch (error) {
     fastify.log.error(`Error retrieving cards: ${error.message}`);
