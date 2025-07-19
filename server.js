@@ -94,7 +94,7 @@ fastify.get('/api/card', {
             translation: { type: 'string' },
             example: { type: 'string' },
             level: { type: 'integer' },
-            repeatDate: { type: 'string' }
+            next_repeat: { type: 'string' }
           }
         }
       },
