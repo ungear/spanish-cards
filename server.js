@@ -177,7 +177,10 @@ fastify.get('/api/card/getTranslationSuggestions', {
         properties: {
           suggestions: {
             type: 'array',
-            items: { type: 'string' },
+            items: { 
+              translation: 'string',
+              example: 'string'
+            },
             description: 'List of translation suggestions'
           }
         }
