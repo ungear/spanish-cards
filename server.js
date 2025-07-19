@@ -114,7 +114,8 @@ fastify.get('/api/card', {
   }
 }, async (request, reply) => {
   try {
-    const cards = await dbService.getAllCards();
+    const userId = request.userId;
+    const cards = await dbService.getAllCards(userId);
     return cards;
   } catch (error) {
     fastify.log.error(`Error retrieving cards: ${error.message}`);

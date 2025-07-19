@@ -37,8 +37,8 @@ export class DbService {
     return result.changes;
   }
 
-  getAllCards() {
-    return this.db.prepare('SELECT * FROM cards ORDER BY created_at DESC').all();
+  getAllCards(userId) {
+    return this.db.prepare('SELECT * FROM cards WHERE user_id = ? ORDER BY created_at DESC').all(userId );
   }
 
   getCardsToTrain() {
