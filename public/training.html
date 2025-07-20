@@ -16,17 +16,14 @@
         <li><a href="/training.html" class="text-blue-500">Training</a></li>
         <li><a href="/training.html?mode=reverse" class="text-blue-500">Reverse</a></li>
       </ul>
-      <ul class="flex space-x-4 p-4">
-        <li><a href="/register.html" class="text-blue-500">Register</a></li>
-        <li><a href="/login.html" class="text-blue-500">Login</a></li>
-        <li><a href="/api/user/logout" class="text-blue-500">Logout</a></li>
-      </ul>
+      <div id="current-user"></div>
     </nav>
     <section class="p-4">
       <table id="training"></table>
     </section>
   </main>
 
+  <script src="js/currentUser.js"></script>
   <script lang="javascript">
     const container = document.getElementById("training");
     const urlParams = new URLSearchParams(window.location.search);
