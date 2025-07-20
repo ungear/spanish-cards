@@ -6,7 +6,7 @@ export default async function userRoutes(fastify, options) {
   const AUTH_COOKIE_NAME = 'spanish-cards-auth';
 
   // Logout user
-  fastify.get('/logout', {
+  fastify.get('/api/user/logout', {
     schema: {
       tags: ['users'],
       summary: 'Logout user',
@@ -23,7 +23,7 @@ export default async function userRoutes(fastify, options) {
   });
 
   // Get current user
-  fastify.get('/current', {
+  fastify.get('/api/user/current', {
     config: { requireAuth: true },
     schema: {
       tags: ['users'],
@@ -54,7 +54,7 @@ export default async function userRoutes(fastify, options) {
   });
 
   // Create user
-  fastify.post('/', {
+  fastify.post('/api/user', {
     schema: {
       tags: ['users'],
       summary: 'Create new user',
@@ -102,7 +102,7 @@ export default async function userRoutes(fastify, options) {
   });
 
   // Login user
-  fastify.post('/login', {
+  fastify.post('/api/user/login', {
     schema: {
       tags: ['users'],
       summary: 'Login user',

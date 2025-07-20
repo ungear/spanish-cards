@@ -5,7 +5,7 @@ export default async function cardsRoutes(fastify, options) {
   const dbService = new DbService();
 
   // Get all cards
-  fastify.get('/', {
+  fastify.get('/api/card', {
     config: { requireAuth: true },
     schema: {
       tags: ['cards'],
@@ -53,7 +53,7 @@ export default async function cardsRoutes(fastify, options) {
   });
 
   // Get Spanish article for a word
-  fastify.get('/getArticle', {
+  fastify.get('/api/card/getArticle', {
     schema: {
       tags: ['cards'],
       summary: 'Get Spanish article for a word',
@@ -90,7 +90,7 @@ export default async function cardsRoutes(fastify, options) {
   });
 
   // Get translation suggestions
-  fastify.get('/getTranslationSuggestions', {
+  fastify.get('/api/card/getTranslationSuggestions', {
     schema: {
       tags: ['cards'],
       summary: 'Get translation suggestions',
@@ -134,7 +134,7 @@ export default async function cardsRoutes(fastify, options) {
   });
 
   // Create a new card
-  fastify.post('/', {
+  fastify.post('/api/card', {
     config: { requireAuth: true },
     schema: {
       tags: ['cards'],
@@ -189,7 +189,7 @@ export default async function cardsRoutes(fastify, options) {
   });
 
   // Reset all cards
-  fastify.post('/resetAll', {
+  fastify.post('/api/card/resetAll', {
     schema: {
       tags: ['cards'],
       summary: 'Reset all cards',

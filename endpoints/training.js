@@ -5,7 +5,7 @@ export default async function trainingRoutes(fastify, options) {
   const dbService = new DbService();
 
   // Get cards for training
-  fastify.get('/', {
+  fastify.get('/api/training', {
     config: { requireAuth: true },
     schema: {
       tags: ['training'],
@@ -46,7 +46,7 @@ export default async function trainingRoutes(fastify, options) {
   });
 
   // Update card level
-  fastify.post('/cardLevelup', {
+  fastify.post('/api/training/cardLevelup', {
     schema: {
       tags: ['training'],
       summary: 'Update card level',

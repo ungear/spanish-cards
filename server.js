@@ -70,9 +70,9 @@ fastify.addHook('preValidation', async (request, reply) => {
 const AUTH_COOKIE_NAME = 'spanish-cards-auth';
 
 // Register route plugins
-await fastify.register(cardsRoutes, { prefix: '/api/card' });
-await fastify.register(trainingRoutes, { prefix: '/api/training' });
-await fastify.register(userRoutes, { prefix: '/api/user' });
+await fastify.register(cardsRoutes);
+await fastify.register(trainingRoutes);
+await fastify.register(userRoutes);
 
 fastify.setNotFoundHandler((request, reply) => {
   reply.status(404).send('Route not found');
