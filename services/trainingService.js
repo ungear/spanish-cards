@@ -30,4 +30,10 @@ export function levelupCard(level) {
   return {newLevel, newRepeatDate};
 }
 
+export function leveldownCard() {
+  let newLevel = 0;
+  const now = new Date();
+  let newRepeatDate = new Date(now.getTime() + (24 * 60 * 60 * 1000)); // +1 day;
+  return {newLevel, newRepeatDate};
+}
 

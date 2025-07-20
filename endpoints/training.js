@@ -1,5 +1,5 @@
 import { DbService } from '../services/dbService.js';
-import { levelupCard } from '../services/trainingService.js';
+import { levelupCard, leveldownCard } from '../services/trainingService.js';
 
 export default async function trainingRoutes(fastify, options) {
   const dbService = new DbService();
@@ -61,18 +61,8 @@ export default async function trainingRoutes(fastify, options) {
       },
       response: {
         200: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'integer' },
-              word: { type: 'string' },
-              translation: { type: 'string' },
-              example: { type: 'string' },
-              level: { type: 'integer' },
-              repeatDate: { type: 'string' }
-            }
-          }
+          type: 'boolean',
+          description: 'The card level was updated successfully'
         },
         400: {
           type: 'string',
@@ -96,11 +86,54 @@ export default async function trainingRoutes(fastify, options) {
     const {newLevel, newRepeatDate} = levelupCard(level);
 
     try {
-      const cards = await dbService.updateCardLevel(id, newLevel, newRepeatDate);
-      return cards;
+      await dbService.updateCardLevel(id, newLevel, newRepeatDate);
+      return true;
     } catch (error) {
       fastify.log.error(`Error upgrading card: ${error.message}`);
       reply.status(500).send({ error: 'Failed to upgrade the card' });
     }
+  });
+
+
+  fastify.post('/api/training/cardLeveldown', {
+    config: { requireAuth: true },
+    schema: {
+      tags: ['training'],
+      summary: 'Downgrade card level',
+      description: 'Downgrade the level of a card',
+      body: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'integer', description: 'The card ID' }
+        }
+      },  
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' }
+          }
+        },
+        400: {
+          type: 'string',
+          description: 'Missing required fields'
+        },
+        500: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' }
+          }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    const { id } = request.body;
+    if (!id) {
+      reply.status(400).send('Missing required fields');
+      return;
+    }
+    const { newLevel, newRepeatDate } = leveldownCard();
+    await dbService.updateCardLevel(id, newLevel, newRepeatDate);
   });
 } 

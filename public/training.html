@@ -46,7 +46,12 @@
       function onCardTrained(isSuccess){
         if(isSuccess) {
           sendCardSuccess(cards[cardIndex]);
-        }  
+        } else {
+          const currentLevel = cards[cardIndex].level;
+          if(currentLevel > 0) {
+            sendCardFailure(cards[cardIndex]);
+          }
+        }
         cardIndex++;
         if(cards[cardIndex])
           trainCard(container, cards[cardIndex], onCardTrained, isReverse);
@@ -99,6 +104,16 @@
         //   startTraining(cards);
         // })
         // .catch(error => console.error('Error fetching cards:', error));
+    }
+
+    function sendCardFailure(card){
+      fetch('/api/training/cardLeveldown', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(card)
+      })
     }
 
     function radnomizeArray(array){
