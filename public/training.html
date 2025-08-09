@@ -19,6 +19,9 @@
       <div id="current-user"></div>
     </nav>
     <section class="p-4">
+      <div id="training-stats" class="mb-4">
+        <span id="total-cards">0</span>/<span id="success-cards">0</span>/<span id="failed-cards">0</span>
+      </div>
       <table id="training"></table>
     </section>
   </main>
@@ -28,16 +31,64 @@
     const container = document.getElementById("training");
     const urlParams = new URLSearchParams(window.location.search);
     const isReverse = urlParams.get('mode') === 'reverse';
-    
+    class State extends EventTarget{
+      constructor(){
+        super();
+        this._totalCards = 0;
+        this._successCards = 0;
+        this._failedCards = 0;
+        this.events = {
+          totalCardsUpdated: 'totalCardsUpdated',
+          successCardsUpdated: 'successCardsUpdated',
+          failedCardsUpdated: 'failedCardsUpdated'
+        }
+      }
+      get totalCards(){
+        return this._totalCards;
+      }
+      set totalCards(value){
+        this._totalCards = value;
+        this.dispatchEvent(new Event(this.events.totalCardsUpdated));
+      } 
+      get successCards(){
+        return this._successCards;
+      }
+      set successCards(value){
+        this._successCards = value;
+        this.dispatchEvent(new Event(this.events.successCardsUpdated));
+      }
+      get failedCards(){
+        return this._failedCards;
+      }
+      set failedCards(value){
+        this._failedCards = value;
+        this.dispatchEvent(new Event(this.events.failedCardsUpdated));
+      }
+    }
+    const state = new State();
+
     document.addEventListener("DOMContentLoaded", () => {
       fetch('/api/training')
         .then(response => response.json())
         .then(cards => {
           radnomizeArray(cards);
           startTraining(cards, isReverse);
+          state.totalCards = cards.length;
         })
         .catch(error => console.error('Error fetching cards:', error));
     })
+
+    state.addEventListener(state.events.totalCardsUpdated, () => {
+      document.getElementById("total-cards").innerText = state.totalCards;
+    });
+
+    state.addEventListener(state.events.successCardsUpdated, () => {
+      document.getElementById("success-cards").innerText = state.successCards;
+    });
+
+    state.addEventListener(state.events.failedCardsUpdated, () => {
+      document.getElementById("failed-cards").innerText = state.failedCards;
+    });
 
     function startTraining(cards, isReverse){
       let cardIndex = 0;
@@ -46,11 +97,13 @@
       function onCardTrained(isSuccess){
         if(isSuccess) {
           sendCardSuccess(cards[cardIndex]);
+          state.successCards++;
         } else {
           const currentLevel = cards[cardIndex].level;
           if(currentLevel > 0) {
             sendCardFailure(cards[cardIndex]);
           }
+          state.failedCards++;
         }
         cardIndex++;
         if(cards[cardIndex])
