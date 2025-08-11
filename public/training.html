@@ -20,7 +20,17 @@
     </nav>
     <section class="p-4">
       <div id="training-stats" class="mb-4">
-        <span id="total-cards">0</span>/<span id="success-cards">0</span>/<span id="failed-cards">0</span>
+        <div class="flex items-center space-x-4 mb-2">
+          <span class="text-sm font-medium">Progress:</span>
+          <span id="progress-text" class="text-sm">0%</span>
+        </div>
+        <div id="progress-bar" class="w-full h-6 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
+          <div id="progress-fill" class="h-full bg-gray-300 transition-all duration-300 ease-in-out"></div>
+        </div>
+        <div class="flex justify-between text-xs text-gray-600 mt-1">
+          <span><span id="processed-cards">0</span>/<span id="total-cards">0</span> cards</span>
+          <span id="success-cards">0</span> learned, <span id="failed-cards">0</span> failed
+        </div>
       </div>
       <table id="training"></table>
     </section>
@@ -64,6 +74,11 @@
         this._failedCards = value;
         this.dispatchEvent(new Event(this.events.failedCardsUpdated));
       }
+      
+      get progressPercentage() {
+        if (this._totalCards === 0) return 0;
+        return Math.round(((this._successCards + this._failedCards) / this._totalCards) * 100);
+      }
     }
     const state = new State();
 
@@ -89,6 +104,38 @@
     state.addEventListener(state.events.failedCardsUpdated, () => {
       document.getElementById("failed-cards").innerText = state.failedCards;
     });
+
+    state.addEventListener(state.events.totalCardsUpdated, updateProgressBar);
+    state.addEventListener(state.events.successCardsUpdated, updateProgressBar);
+    state.addEventListener(state.events.failedCardsUpdated, updateProgressBar);
+
+    function updateProgressBar() {
+      const progressText = document.getElementById('progress-text');
+      const progressFill = document.getElementById('progress-fill');
+      
+      if (progressText && progressFill) {
+        progressText.textContent = `${state.progressPercentage}%`;
+        
+        // Clear existing blocks
+        progressFill.innerHTML = '';
+        
+        // Add green blocks for success cards
+        for (let i = 0; i < state.successCards; i++) {
+          const greenBlock = document.createElement('div');
+          greenBlock.className = 'h-full bg-green-500 float-left';
+          greenBlock.style.width = `${100 / state.totalCards}%`;
+          progressFill.appendChild(greenBlock);
+        }
+        
+        // Add red blocks for failed cards
+        for (let i = 0; i < state.failedCards; i++) {
+          const redBlock = document.createElement('div');
+          redBlock.className = 'h-full bg-red-500 float-left';
+          redBlock.style.width = `${100 / state.totalCards}%`;
+          progressFill.appendChild(redBlock);
+        }
+      }
+    }
 
     function startTraining(cards, isReverse){
       let cardIndex = 0;
