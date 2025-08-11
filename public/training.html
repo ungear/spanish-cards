@@ -23,9 +23,12 @@
         <div id="progress-bar" class="w-full h-6 bg-gray-200 rounded-full overflow-hidden border border-gray-300">
           <div id="progress-fill" class="h-full bg-gray-300 transition-all duration-300 ease-in-out"></div>
         </div>
-        <div class="flex justify-between text-xs text-gray-600 mt-1">
-          <span><span id="processed-cards">0</span>/<span id="total-cards">0</span> cards</span>
-          <span id="success-cards">0</span> learned, <span id="failed-cards">0</span> failed
+        <div class="flex text-xs text-gray-600 mt-1">
+          <span id="processed-cards">0</span>/<span id="total-cards">0 | </span>
+          <span class="mx-2"> | </span>
+          <span id="success-cards" class="text-green-500">0</span>
+          <span class="mx-2"> | </span>
+          <span id="failed-cards" class="text-red-600">0</span>
         </div>
       </div>
       <table id="training"></table>
