@@ -79,6 +79,10 @@
         if (this._totalCards === 0) return 0;
         return Math.round(((this._successCards + this._failedCards) / this._totalCards) * 100);
       }
+
+      get processedCardsCount() {
+        return this._successCards + this._failedCards;
+      }
     }
     const state = new State();
 
@@ -113,6 +117,9 @@
       const progressText = document.getElementById('progress-text');
       const progressFill = document.getElementById('progress-fill');
       
+      const processedCards = document.getElementById('processed-cards');
+      processedCards.innerText = state.processedCardsCount;
+
       if (progressText && progressFill) {
         progressText.textContent = `${state.progressPercentage}%`;
         
