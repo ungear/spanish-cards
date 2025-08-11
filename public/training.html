@@ -70,11 +70,6 @@
         this._failedCards = value;
         this.dispatchEvent(new Event(this.events.failedCardsUpdated));
       }
-      
-      get progressPercentage() {
-        if (this._totalCards === 0) return 0;
-        return Math.round(((this._successCards + this._failedCards) / this._totalCards) * 100);
-      }
 
       get processedCardsCount() {
         return this._successCards + this._failedCards;
@@ -110,14 +105,13 @@
     state.addEventListener(state.events.failedCardsUpdated, updateProgressBar);
 
     function updateProgressBar() {
-      const progressFill = document.getElementById('progress-fill');
-      
+      // Update processed cards count
       const processedCards = document.getElementById('processed-cards');
       processedCards.innerText = state.processedCardsCount;
-
-      if (progressText && progressFill) {
-        progressText.textContent = `${state.progressPercentage}%`;
-        
+      
+      // Update progress bar
+      const progressFill = document.getElementById('progress-fill');
+      if (progressFill) {
         // Clear existing blocks
         progressFill.innerHTML = '';
         
