@@ -12,6 +12,9 @@ const TranslationSuggestions = z.object({
   suggestions: z.array(Translation),
 });
 export class OpenAiService{
+  private client: OpenAI;
+  private model: string;
+
   constructor(){
     this.client = new OpenAI({
       organization: OPEN_AI_ORGANIZATION,
@@ -21,7 +24,7 @@ export class OpenAiService{
     //this.model = "gpt-4.1";
     this.model = "gpt-4.1-2025-04-14";
   }
-  async getArticle(word){
+  async getArticle(word: string){
     const completion = await this.client.chat.completions.create({
       model: this.model,
       messages: [
@@ -42,7 +45,7 @@ export class OpenAiService{
     return completion.choices[0].message.content;
   }
 
-  async getTranslationSuggestions(word){
+  async getTranslationSuggestions(word: string){
     const completion = await this.client.chat.completions.create({
       model: this.model,
       messages: [
@@ -61,7 +64,7 @@ export class OpenAiService{
       response_format: zodResponseFormat(TranslationSuggestions, "suggestions"),
     });
     
-    const output = JSON.parse(completion.choices[0].message.content);
+    const output = JSON.parse(completion.choices[0].message.content || "{}");
 
     return output;
   }

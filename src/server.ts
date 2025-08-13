@@ -44,7 +44,7 @@ await fastify.register(fastifySwaggerUi, {
 
 // Serve static files from the ./public folder
 fastify.register(fastifyStatic, {
-  root: path.join(__dirname, 'public'),
+  root: path.join(__dirname, '../', 'public'),
   //prefix: '/public/', // Optional: adds a prefix to access static files
 });
 fastify.register(fastifyCookie, {

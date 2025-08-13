@@ -1,7 +1,8 @@
 import { DbService } from '../services/dbService.js';
 import { levelupCard, leveldownCard } from '../services/trainingService.js';
+import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
-export default async function trainingRoutes(fastify, options) {
+export default async function trainingRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   const dbService = new DbService();
 
   // Get cards for training
@@ -36,17 +37,20 @@ export default async function trainingRoutes(fastify, options) {
     }
   }, async (request, reply) => {
     try {
-      const userId = request.userId;
+      const userId = request.userId as string;
       const cards = await dbService.getCardsToTrain(userId);
       return cards;
     } catch (error) {
-      fastify.log.error(`Error retrieving cards: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      fastify.log.error(`Error retrieving cards: ${errorMessage}`);
       reply.status(500).send({ error: 'Failed to create training' });
     }
   });
 
   // Update card level
-  fastify.post('/api/training/cardLevelup', {
+  fastify.post<{
+    Body: { id: number, level: number }
+  }>('/api/training/cardLevelup', {
     schema: {
       tags: ['training'],
       summary: 'Update card level',
@@ -86,16 +90,19 @@ export default async function trainingRoutes(fastify, options) {
     const {newLevel, newRepeatDate} = levelupCard(level);
 
     try {
-      await dbService.updateCardLevel(id, newLevel, newRepeatDate);
+      await dbService.updateCardLevel(id.toString(), newLevel, newRepeatDate);
       return true;
     } catch (error) {
-      fastify.log.error(`Error upgrading card: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      fastify.log.error(`Error upgrading card: ${errorMessage}`);
       reply.status(500).send({ error: 'Failed to upgrade the card' });
     }
   });
 
 
-  fastify.post('/api/training/cardLeveldown', {
+  fastify.post<{
+    Body: { id: number }
+  }>('/api/training/cardLeveldown', {
     config: { requireAuth: true },
     schema: {
       tags: ['training'],
@@ -134,6 +141,6 @@ export default async function trainingRoutes(fastify, options) {
       return;
     }
     const { newLevel, newRepeatDate } = leveldownCard();
-    await dbService.updateCardLevel(id, newLevel, newRepeatDate);
+    await dbService.updateCardLevel(id.toString(), newLevel, newRepeatDate);
   });
 } 

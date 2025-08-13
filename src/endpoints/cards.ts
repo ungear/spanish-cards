@@ -1,7 +1,8 @@
 import { OpenAiService } from '../services/openAiService.js';
 import { DbService } from '../services/dbService.js';
+import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
-export default async function cardsRoutes(fastify, options) {
+export default async function cardsRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   const dbService = new DbService();
 
   // Get all cards
@@ -43,17 +44,20 @@ export default async function cardsRoutes(fastify, options) {
     }
   }, async (request, reply) => {
     try {
-      const userId = request.userId;
+      const userId = request.userId as string;
       const cards = await dbService.getAllCards(userId);
       return cards;
     } catch (error) {
-      fastify.log.error(`Error retrieving cards: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      fastify.log.error(`Error retrieving cards: ${errorMessage}`);
       reply.status(500).send({ error: 'Failed to retrieve cards' });
     }
   });
 
   // Get Spanish article for a word
-  fastify.get('/api/card/getArticle', {
+  fastify.get<{
+    Querystring: { word: string }
+  }>('/api/card/getArticle', {
     schema: {
       tags: ['cards'],
       summary: 'Get Spanish article for a word',
@@ -79,7 +83,7 @@ export default async function cardsRoutes(fastify, options) {
       }
     }
   }, async (request, reply) => {
-    const word = request.query.word;
+    const word = request.query.word as string;
     if (!word) {
       reply.status(400).send('Missing word parameter');
       return;
@@ -90,7 +94,9 @@ export default async function cardsRoutes(fastify, options) {
   });
 
   // Get translation suggestions
-  fastify.get('/api/card/getTranslationSuggestions', {
+  fastify.get<{
+    Querystring: { word: string }
+  }>('/api/card/getTranslationSuggestions', {
     schema: {
       tags: ['cards'],
       summary: 'Get translation suggestions',
@@ -134,7 +140,9 @@ export default async function cardsRoutes(fastify, options) {
   });
 
   // Create a new card
-  fastify.post('/api/card', {
+  fastify.post<{
+    Body: { word: string, translation: string, example: string }
+  }>('/api/card', {
     config: { requireAuth: true },
     schema: {
       tags: ['cards'],
@@ -179,11 +187,12 @@ export default async function cardsRoutes(fastify, options) {
     }
 
     try {
-      const cardId = dbService.saveCard(word, translation, example, userId);
+      const cardId = dbService.saveCard(word, translation, example, userId as string);
       console.log(`Card saved with ID: ${cardId}`, { word, translation, example, userId });
       return { success: true, cardId };
     } catch (error) {
-      fastify.log.error(`Error saving card: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      fastify.log.error(`Error saving card: ${errorMessage}`);
       reply.status(500).send({ error: 'Failed to save card' });
     }
   });
@@ -214,7 +223,8 @@ export default async function cardsRoutes(fastify, options) {
       await dbService.resetAllCards();
       return { success: true };
     } catch (error) {
-      fastify.log.error(`Error resetting cards: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      fastify.log.error(`Error resetting cards: ${errorMessage}`);
       reply.status(500).send({ error: 'Failed to reset cards' });
     }
   });

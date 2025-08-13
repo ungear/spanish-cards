@@ -1,4 +1,4 @@
-export function levelupCard(level) {
+export function levelupCard(level: number) {
   const now = new Date();
   let newLevel = level;
   let newRepeatDate;

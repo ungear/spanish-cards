@@ -2,15 +2,17 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { User } from '../typing/user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dbPath = path.join(__dirname, '..', 'data', 'cards.db');
+const dbPath = path.join(__dirname, '../../', 'data', 'cards.db');
 
 export class DbService {
+  private db: Database.Database;
   constructor() {
     try {
-      const dataDir = path.join(__dirname, '..', 'data');
+      const dataDir = path.join(__dirname, '../../', 'data');
       if (!fs.existsSync(dataDir)) {
         fs.mkdirSync(dataDir, { recursive: true });
       }
@@ -21,7 +23,7 @@ export class DbService {
     this.db = new Database(dbPath);
   }
 
-  saveCard(word, translation, example, userId) {
+  saveCard(word: string, translation: string, example: string, userId: string) {
     const stmt = this.db.prepare(
       'INSERT INTO cards (word, translation, example, user_id) VALUES (?, ?, ?, ?)'
     );
@@ -29,7 +31,7 @@ export class DbService {
     return result.lastInsertRowid;
   }
 
-  updateCardLevel(id, newLevel, newRepeatDate) {
+  updateCardLevel(id: string, newLevel: number, newRepeatDate: Date) {
     const stmt = this.db.prepare(
       'UPDATE cards SET level = ?, next_repeat = datetime(?) WHERE id = ?'
     );
@@ -37,11 +39,11 @@ export class DbService {
     return result.changes;
   }
 
-  getAllCards(userId) {
+  getAllCards(userId: string) {
     return this.db.prepare('SELECT * FROM cards WHERE user_id = ? ORDER BY created_at DESC').all(userId );
   }
 
-  getCardsToTrain(userId) {
+  getCardsToTrain(userId: string) {
     const now = new Date().toISOString();
     return this.db.prepare('SELECT * FROM cards WHERE user_id = ? AND next_repeat < ? ORDER BY next_repeat ASC').all(userId, now);
   }
@@ -49,19 +51,19 @@ export class DbService {
     const now = new Date().toISOString();
     return this.db.prepare('UPDATE cards SET level = 0, next_repeat = datetime(?)').run(now);
   }
-  createUser(name, email, password) {
+  createUser(name: string, email: string, password: string) {
     const stmt = this.db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
     const result = stmt.run(name, email, password);
     return result.lastInsertRowid;
   }
   
-  getUserByPassword(email, password) {
+  getUserByPassword(email: string, password: string): User | null {
     const stmt = this.db.prepare('SELECT * FROM users WHERE email = ? AND password = ?');
-    const result = stmt.get(email, password);
+    const result = stmt.get(email, password) as User;
     return result;
   }
 
-  getUserById(id) {
+  getUserById(id: string) {
     const stmt = this.db.prepare('SELECT * FROM users WHERE id = ?');
     const result = stmt.get(id);
     return result;

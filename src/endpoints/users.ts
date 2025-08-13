@@ -1,7 +1,8 @@
 import { DbService } from '../services/dbService.js';
 import { userService } from '../services/userService.js';
+import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
-export default async function userRoutes(fastify, options) {
+export default async function userRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   const dbService = new DbService();
   const AUTH_COOKIE_NAME = 'spanish-cards-auth';
 
@@ -49,12 +50,14 @@ export default async function userRoutes(fastify, options) {
     }
   }, async (request, reply) => {
     const userId = request.userId;
-    const user = await dbService.getUserById(userId);
+    const user = await dbService.getUserById(userId as string);
     return user;
   });
 
   // Create user
-  fastify.post('/api/user', {
+  fastify.post<{
+    Body: { name: string, email: string, password: string }
+  }>('/api/user', {
     schema: {
       tags: ['users'],
       summary: 'Create new user',
@@ -96,13 +99,16 @@ export default async function userRoutes(fastify, options) {
       await userService.createUser(name, email, password, dbService);
       reply.redirect('/login.html');
     } catch (error) {
-      fastify.log.error(`Error creating user: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      fastify.log.error(`Error creating user: ${errorMessage}`);
       reply.status(500).send({ error: 'Failed to create user' });
     }
   });
 
   // Login user
-  fastify.post('/api/user/login', {
+  fastify.post<{
+    Body: { email: string, password: string }
+  }>('/api/user/login', {
     schema: {
       tags: ['users'],
       summary: 'Login user',
@@ -156,7 +162,8 @@ export default async function userRoutes(fastify, options) {
       });
       reply.redirect('/index.html');
     } catch (error) {
-      fastify.log.error(`Error logging in user: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      fastify.log.error(`Error logging in user: ${errorMessage}`);
       reply.status(500).send({ error: 'Failed to login user' });
     }
   });

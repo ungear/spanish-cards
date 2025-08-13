@@ -1,5 +1,8 @@
-## Start server
-`node server.js`
+## Start dev server
+`npm run dev`
+
+## Start prod server
+`npm run start:dev`
 
 ## Run DB query
 `node db-query.js "select * from cards"`
