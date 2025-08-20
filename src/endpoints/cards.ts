@@ -197,6 +197,83 @@ export default async function cardsRoutes(fastify: FastifyInstance, options: Fas
     }
   });
 
+  // Update an existing card
+  fastify.put<{
+    Params: { id: string },
+    Body: { word: string, translation: string, example: string }
+  }>('/api/card/:id', {
+    config: { requireAuth: true },
+    schema: {
+      tags: ['cards'],
+      summary: 'Update a card',
+      description: 'Update an existing vocabulary card',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'string', description: 'The card ID to update' }
+        }
+      },
+      body: {
+        type: 'object',
+        required: ['word', 'translation'],
+        properties: {
+          word: { type: 'string', description: 'The Spanish word' },
+          translation: { type: 'string', description: 'The English translation' },
+          example: { type: 'string', description: 'Example sentence (optional)' }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            message: { type: 'string' }
+          }
+        },
+        400: {
+          type: 'string',
+          description: 'Missing required fields'
+        },
+        404: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' }
+          }
+        },
+        500: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' }
+          }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    const { id } = request.params;
+    const { word, translation, example } = request.body;
+
+    if (!word || !translation) {
+      reply.status(400).send('Missing required fields');
+      return;
+    }
+
+    try {
+      const changes = dbService.updateCard(id, word, translation, example);
+      
+      if (changes === 0) {
+        reply.status(404).send({ error: 'Card not found' });
+        return;
+      }
+
+      return { success: true, message: 'Card updated successfully' };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      fastify.log.error(`Error updating card: ${errorMessage}`);
+      reply.status(500).send({ error: 'Failed to update card' });
+    }
+  });
+
   // Reset all cards
   fastify.post('/api/card/resetAll', {
     schema: {

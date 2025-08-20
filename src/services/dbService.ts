@@ -39,6 +39,12 @@ export class DbService {
     return result.changes;
   }
 
+  updateCard(id: string, word: string, translation: string, example: string) {
+    const stmt = this.db.prepare('UPDATE cards SET word = ?, translation = ?, example = ? WHERE id = ?');
+    const result = stmt.run(word, translation, example || null, id);
+    return result.changes;
+  }
+
   getAllCards(userId: string) {
     return this.db.prepare('SELECT * FROM cards WHERE user_id = ? ORDER BY created_at DESC').all(userId );
   }
