@@ -49,6 +49,12 @@ export class DbService {
     return this.db.prepare('SELECT * FROM cards WHERE user_id = ? ORDER BY created_at DESC').all(userId );
   }
 
+  getCardById(id: string, userId: string) {
+    const stmt = this.db.prepare('SELECT * FROM cards WHERE id = ? AND user_id = ?');
+    const result = stmt.get(id, userId);
+    return result;
+  }
+
   getCardsToTrain(userId: string) {
     const now = new Date().toISOString();
     return this.db.prepare('SELECT * FROM cards WHERE user_id = ? AND next_repeat < ? ORDER BY next_repeat ASC').all(userId, now);

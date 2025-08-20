@@ -46,6 +46,13 @@
   <script src="utils.js"></script>
   <script src="js/currentUser.js"></script>
   <script lang="javascript">
+    const urlParams = new URLSearchParams(window.location.search);
+    const cardId = urlParams.get('id');
+    const isEdit = cardId !== null;
+    if (isEdit) {
+      tryLoadingCard(cardId);
+    }
+ 
     document.getElementById('get-translation-btn').addEventListener('click', function(event) {
       event.preventDefault(); // Prevent form submission
       const input = document.getElementById('spanish-word').value;
@@ -103,9 +110,15 @@
           translation: translation,
           example: example
         };
+
+        if (isEdit) {
+          cardData.id = cardId;
+        }
         
-        const promise = fetch('/api/card', {
-          method: 'POST',
+        const url = isEdit ? `/api/card/${cardId}` : '/api/card'; 
+
+        const promise = fetch(url, {
+          method: isEdit ? 'PUT' : 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -130,6 +143,19 @@
       document.getElementById('spanish-word').value = '';
       document.getElementById('translation').value = '';
       document.getElementById('example').value = '';
+    }
+
+    function tryLoadingCard(id) {
+      fetch(`/api/card/${id}`)
+        .then(response => response.json())
+        .then(d => populateForm(d))
+        .catch(error => console.error('Error:', error));
+    }
+
+    function populateForm(card) {
+      document.getElementById('spanish-word').value = card.word;
+      document.getElementById('translation').value = card.translation;
+      document.getElementById('example').value = card.example;
     }
   </script>
 </body>

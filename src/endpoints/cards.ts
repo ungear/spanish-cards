@@ -139,6 +139,75 @@ export default async function cardsRoutes(fastify: FastifyInstance, options: Fas
     return suggestions;
   });
 
+  // Get a card by ID
+  fastify.get<{
+    Params: { id: string }
+  }>('/api/card/:id', {
+    config: { requireAuth: true },
+    schema: {
+      tags: ['cards'],
+      summary: 'Get a card by ID',
+      description: 'Retrieve a specific vocabulary card by its ID',
+      params: {
+        type: 'object',
+        required: ['id'],
+        properties: {
+          id: { type: 'string', description: 'The card ID to retrieve' }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            word: { type: 'string' },
+            translation: { type: 'string' },
+            example: { type: 'string' },
+            level: { type: 'integer' },
+            next_repeat: { type: 'string' },
+            created_at: { type: 'string' }
+          }
+        },
+        401: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' }
+          }
+        },
+        404: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' }
+          }
+        },
+        500: {
+          type: 'object',
+          properties: {
+            error: { type: 'string' }
+          }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    try {
+      const { id } = request.params;
+      const userId = request.userId as string;
+      
+      const card = await dbService.getCardById(id, userId);
+      
+      if (!card) {
+        reply.status(404).send({ error: 'Card not found' });
+        return;
+      }
+      
+      return card;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      fastify.log.error(`Error retrieving card: ${errorMessage}`);
+      reply.status(500).send({ error: 'Failed to retrieve card' });
+    }
+  });
+
   // Create a new card
   fastify.post<{
     Body: { word: string, translation: string, example: string }
