@@ -58,6 +58,7 @@ export default async function cardsRoutes(fastify: FastifyInstance, options: Fas
   fastify.get<{
     Querystring: { word: string }
   }>('/api/card/getArticle', {
+    config: { requireAuth: true },
     schema: {
       tags: ['cards'],
       summary: 'Get Spanish article for a word',
@@ -97,6 +98,7 @@ export default async function cardsRoutes(fastify: FastifyInstance, options: Fas
   fastify.get<{
     Querystring: { word: string }
   }>('/api/card/getTranslationSuggestions', {
+    config: { requireAuth: true },
     schema: {
       tags: ['cards'],
       summary: 'Get translation suggestions',
@@ -345,6 +347,7 @@ export default async function cardsRoutes(fastify: FastifyInstance, options: Fas
 
   // Reset all cards
   fastify.post('/api/card/resetAll', {
+    config: { requireAuth: true },
     schema: {
       tags: ['cards'],
       summary: 'Reset all cards',

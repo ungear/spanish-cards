@@ -51,6 +51,7 @@ export default async function trainingRoutes(fastify: FastifyInstance, options: 
   fastify.post<{
     Body: { id: number, level: number }
   }>('/api/training/cardLevelup', {
+    config: { requireAuth: true },
     schema: {
       tags: ['training'],
       summary: 'Update card level',
