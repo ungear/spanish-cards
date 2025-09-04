@@ -46,10 +46,6 @@ export class OpenAiService{
   }
 
   async getTranslationSuggestions(word: string){
-    console.log('>>>>>>>>>>>>>>');
-    console.log(JSON.stringify(zodResponseFormat(TranslationSuggestions, "suggestions"), null, 2));
-
-
     const completion = await this.client.chat.completions.create({
       model: this.model,
       messages: [
