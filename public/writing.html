@@ -1,0 +1,63 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanish Cards - Writing</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+  
+  <main>
+    <nav class="flex justify-between bg-gray-200">
+      <ul class="flex space-x-4 p-4">
+        <li><a href="/list.html" class="text-blue-500">List</a></li>
+        <li><a href="/add.html" class="text-blue-500">Add</a></li>
+        <li><a href="/training.html" class="text-blue-500">Training</a></li>
+        <li><a href="/training.html?mode=reverse" class="text-blue-500">Reverse</a></li>
+      </ul>
+      <div id="current-user"></div>
+    </nav>
+    <section class="p-4">
+      <form id="writing-config">
+        <div>
+          <input type="checkbox" name="topics" id="topic-presente" value="presente"/>
+          <label for="topic-presente">Presente</label>
+        </div>
+        <div>
+          <input type="checkbox" name="topics" id="topic-pret-indef" value="pret-indef"/>
+          <label for="topic-pret-indef">Pret. Indefinido</label>
+        </div>
+        <div>
+          <input type="checkbox" name="topics" id="topic-pret-imperf" value="pret-imperf"/>
+          <label for="topic-pret-imperf">Pret. Imperfecto</label>
+        </div>
+        <div>
+          <input type="checkbox" name="topics" id="topic-perf" value="perf"/>
+          <label for="topic-perf">Pret. Perfecto</label>
+        </div>
+        <div>
+          <input type="checkbox" name="topics" id="topic-imperativo" value="imperativo"/>
+          <label for="topic-imperativo">Imperativo</label>
+        </div>
+        <div>
+          <button class="bg-green-500 text-white px-4 py-2 rounded">Start</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="js/currentUser.js"></script>
+  <script lang="javascript">
+    document.getElementById('writing-config').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const selectedTopics = formData.getAll('topics');
+      if(selectedTopics.length === 0){
+        alert('Please select at least one topic.');
+        return;
+      }
+      console.log(selectedTopics);
+    });
+  </script>
+</body>
+</html> 
