@@ -86,28 +86,18 @@
         const topicsConfig = await response.json();
         const topicsContainer = document.getElementById('topics-container');
         
-        // Clear any existing content
-        topicsContainer.innerHTML = '';
-        
+console.log(Object.entries(topicsConfig.topics))
+console.log(topicsConfig.topics)
+
         // Generate checkboxes dynamically
-        for (const [value, label] of Object.entries(topicsConfig)) {
-          const div = document.createElement('div');
-          const checkboxId = `topic-${value}`;
-          
-          const checkbox = document.createElement('input');
-          checkbox.type = 'checkbox';
-          checkbox.name = 'topics';
-          checkbox.id = checkboxId;
-          checkbox.value = value;
-          
-          const labelElement = document.createElement('label');
-          labelElement.htmlFor = checkboxId;
-          labelElement.textContent = label;
-          
-          div.appendChild(checkbox);
-          div.appendChild(labelElement);
-          topicsContainer.appendChild(div);
-        }
+        topicsContainer.innerHTML = Object.entries(topicsConfig.topics)
+          .map(([value, label]) => `
+            <div>
+              <input type="checkbox" name="topics" id="topic-${value}" value="${value}">
+              <label for="topic-${value}">${label}</label>
+            </div>
+          `)
+          .join('');
       } catch (error) {
         console.error('Error loading topics configuration:', error);
       }

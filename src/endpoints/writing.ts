@@ -93,14 +93,19 @@ export default async function writingRoutes(fastify: FastifyInstance, options: F
       response: {
         200: {
           type: 'object',
-          additionalProperties: {
-            type: 'string'
+          properties: {
+            topics: {
+              type: 'object',
+              additionalProperties: {
+                type: 'string'
+              }
+            }
           }
         }
       }
     }
   }, async (request, reply) => {
-    return WritingTopicLabels;
+    return { topics: WritingTopicLabels };
   });
 }
 
