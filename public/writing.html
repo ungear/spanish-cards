@@ -85,10 +85,7 @@
         
         const topicsConfig = await response.json();
         const topicsContainer = document.getElementById('topics-container');
-        
-console.log(Object.entries(topicsConfig.topics))
-console.log(topicsConfig.topics)
-
+  
         // Generate checkboxes dynamically
         topicsContainer.innerHTML = Object.entries(topicsConfig.topics)
           .map(([value, label]) => `

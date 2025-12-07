@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import  {OPEN_AI_ORGANIZATION, OPEN_AI_PROJECT, OPEN_AI_API_KEY } from "../secret.js";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import { WritingTopic, WritingTopicLabels } from "../endpoints/writing.js";
 
 const Translation = z.object({ 
   translation: z.string(),
@@ -67,5 +68,27 @@ export class OpenAiService{
     const output = JSON.parse(completion.choices[0].message.content || "{}");
 
     return output;
+  }
+
+  async getWritingTask(topics: WritingTopic[]){
+    const topicLabels = topics.map(topic => WritingTopicLabels[topic]);
+    const completion = await this.client.chat.completions.create({
+      model: this.model,
+      messages: [
+        {
+          role: "developer",
+          content: `
+            You are a Spanish teacher. Your task is to generate 10 sentences in English.
+            The learner's task will be to compose translation for the sentences in Spanish. 
+            The sentences should use the provided grammar topic.
+            `
+          },
+          {
+            role: "user",
+            content: "Topics: " + topicLabels.join(", "),
+          },
+        ],
+      });
+    return completion.choices[0].message.content;
   }
 }

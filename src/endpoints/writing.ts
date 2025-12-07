@@ -1,20 +1,53 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { OpenAiService } from '../services/openAiService.js';
 
-enum WritingTopic {
-  Presente = 'presente',
-  PretIndef = 'pret-indef',
-  PretImperf = 'pret-imperf',
-  Perf = 'perf',
-  Imperativo = 'imperativo'
+export enum WritingTopic {
+  Presente,
+  PretIndef,
+  PretImperf,
+  Perf,
+  Imperativo,
 }
 
-const WritingTopicLabels: Record<WritingTopic, string> = {
+export const WritingTopicLabels: Record<WritingTopic, string> = {
   [WritingTopic.Presente]: 'Presente',
   [WritingTopic.PretIndef]: 'Pret. Indefinido',
   [WritingTopic.PretImperf]: 'Pret. Imperfecto',
   [WritingTopic.Perf]: 'Pret. Perfecto',
   [WritingTopic.Imperativo]: 'Imperativo'
 };
+
+/**
+ * Safely converts an array of strings to WritingTopic enum values
+ * @param topicStrings Array of string values to convert
+ * @returns Array of valid WritingTopic enum values
+ * @throws Error if any invalid topic values are found
+ */
+function convertToWritingTopics(topicStrings: string[]): WritingTopic[] {
+  const validTopics: WritingTopic[] = [];
+  const invalidTopics: string[] = [];
+  
+  // Get all valid enum numeric values from WritingTopicLabels keys
+  const validEnumValues = Object.keys(WritingTopicLabels).map(key => Number(key)).filter(val => !isNaN(val));
+  
+  for (const topicString of topicStrings) {
+    // Try to parse as number (since enum values are numeric)
+    const numericValue = Number(topicString);
+    
+    // Check if it's a valid integer and exists in valid enum values
+    if (!isNaN(numericValue) && Number.isInteger(numericValue) && validEnumValues.includes(numericValue)) {
+      validTopics.push(numericValue as WritingTopic);
+    } else {
+      invalidTopics.push(topicString);
+    }
+  }
+  
+  if (invalidTopics.length > 0) {
+    throw new Error(`Invalid topic values: ${invalidTopics.join(', ')}. Valid values are: ${validEnumValues.join(', ')}`);
+  }
+  
+  return validTopics;
+}
 
 export default async function writingRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   // POST /api/writing
@@ -42,8 +75,9 @@ export default async function writingRoutes(fastify: FastifyInstance, options: F
         200: {
           type: 'object',
           properties: {
-            success: { type: 'boolean' }
-          }
+            writingTask: { type: 'string' }
+          },
+          required: ['writingTask']
         },
         400: {
           type: 'object',
@@ -74,9 +108,19 @@ export default async function writingRoutes(fastify: FastifyInstance, options: F
         return;
       }
 
-      // TODO: Implement writing exercise logic here
-      // For now, just return success
-      return { success: true };
+      // Safely convert string array to WritingTopic enum array
+      let validTopics: WritingTopic[];
+      try {
+        validTopics = convertToWritingTopics(topics);
+      } catch (conversionError) {
+        const errorMessage = conversionError instanceof Error ? conversionError.message : 'Invalid topic values';
+        reply.status(400).send({ error: errorMessage });
+        return;
+      }
+
+      const openAiService = new OpenAiService();
+      const writingTask = await openAiService.getWritingTask(validTopics);
+      return { writingTask };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       fastify.log.error(`Error creating writing exercise: ${errorMessage}`);
