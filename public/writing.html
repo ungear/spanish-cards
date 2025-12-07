@@ -48,7 +48,7 @@
 
   <script src="js/currentUser.js"></script>
   <script lang="javascript">
-    document.getElementById('writing-config').addEventListener('submit', function(event) {
+    document.getElementById('writing-config').addEventListener('submit', async function(event) {
       event.preventDefault();
       const formData = new FormData(event.target);
       const selectedTopics = formData.getAll('topics');
@@ -56,7 +56,32 @@
         alert('Please select at least one topic.');
         return;
       }
-      console.log(selectedTopics);
+      
+      try {
+        const response = await fetch('/api/writing', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            topics: selectedTopics
+          })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert(`Error: ${errorData.error || 'Failed to create writing exercise'}`);
+          return;
+        }
+        
+        const data = await response.json();
+        console.log('Writing exercise created:', data);
+        // TODO: Handle successful response (e.g., redirect or show exercise)
+      } catch (error) {
+        console.error('Error sending request:', error);
+        alert('Failed to send request. Please try again.');
+      }
     });
   </script>
 </body>

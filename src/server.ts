@@ -8,7 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url'; // Import this to handle __dirname equivalent
 import {PORT} from './settings.js';
 import { jwtService } from './services/jwtService.js';
-import { cardsRoutes, trainingRoutes, userRoutes } from './endpoints/index.js';
+import { cardsRoutes, trainingRoutes, userRoutes, writingRoutes } from './endpoints/index.js';
 // Create __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +27,7 @@ await fastify.register(fastifySwagger, {
       { name: 'cards', description: 'Card management endpoints' },
       { name: 'training', description: 'Training and learning endpoints' },
       { name: 'users', description: 'User authentication and management' },
+      { name: 'writing', description: 'Writing exercise endpoints' },
     ],
     securityDefinitions: {
       cookieAuth: {
@@ -73,6 +74,7 @@ const AUTH_COOKIE_NAME = 'spanish-cards-auth';
 await fastify.register(cardsRoutes);
 await fastify.register(trainingRoutes);
 await fastify.register(userRoutes);
+await fastify.register(writingRoutes);
 
 fastify.setNotFoundHandler((request, reply) => {
   reply.status(404).send('Route not found');
