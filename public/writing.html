@@ -19,25 +19,8 @@
     </nav>
     <section class="p-4">
       <form id="writing-config">
-        <div>
-          <input type="checkbox" name="topics" id="topic-presente" value="presente"/>
-          <label for="topic-presente">Presente</label>
-        </div>
-        <div>
-          <input type="checkbox" name="topics" id="topic-pret-indef" value="pret-indef"/>
-          <label for="topic-pret-indef">Pret. Indefinido</label>
-        </div>
-        <div>
-          <input type="checkbox" name="topics" id="topic-pret-imperf" value="pret-imperf"/>
-          <label for="topic-pret-imperf">Pret. Imperfecto</label>
-        </div>
-        <div>
-          <input type="checkbox" name="topics" id="topic-perf" value="perf"/>
-          <label for="topic-perf">Pret. Perfecto</label>
-        </div>
-        <div>
-          <input type="checkbox" name="topics" id="topic-imperativo" value="imperativo"/>
-          <label for="topic-imperativo">Imperativo</label>
+        <div id="topics-container">
+          <!-- Topics will be dynamically generated here -->
         </div>
         <div>
           <button class="bg-green-500 text-white px-4 py-2 rounded">Start</button>
@@ -48,6 +31,9 @@
 
   <script src="js/currentUser.js"></script>
   <script lang="javascript">
+    // Load topics when page loads
+    document.addEventListener('DOMContentLoaded', loadTopicsConfig);
+    
     document.getElementById('writing-config').addEventListener('submit', async function(event) {
       event.preventDefault();
       const formData = new FormData(event.target);
@@ -83,6 +69,49 @@
         alert('Failed to send request. Please try again.');
       }
     });
+    
+    // Load topics configuration and generate checkboxes
+    async function loadTopicsConfig() {
+      try {
+        const response = await fetch('/api/writing/getConfig', {
+          method: 'GET',
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          console.error('Failed to load topics configuration');
+          return;
+        }
+        
+        const topicsConfig = await response.json();
+        const topicsContainer = document.getElementById('topics-container');
+        
+        // Clear any existing content
+        topicsContainer.innerHTML = '';
+        
+        // Generate checkboxes dynamically
+        for (const [value, label] of Object.entries(topicsConfig)) {
+          const div = document.createElement('div');
+          const checkboxId = `topic-${value}`;
+          
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.name = 'topics';
+          checkbox.id = checkboxId;
+          checkbox.value = value;
+          
+          const labelElement = document.createElement('label');
+          labelElement.htmlFor = checkboxId;
+          labelElement.textContent = label;
+          
+          div.appendChild(checkbox);
+          div.appendChild(labelElement);
+          topicsContainer.appendChild(div);
+        }
+      } catch (error) {
+        console.error('Error loading topics configuration:', error);
+      }
+    }
   </script>
 </body>
 </html> 
