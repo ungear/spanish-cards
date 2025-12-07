@@ -75,7 +75,21 @@ export default async function writingRoutes(fastify: FastifyInstance, options: F
         200: {
           type: 'object',
           properties: {
-            writingTask: { type: 'string' }
+            writingTask: { 
+              type: 'object',
+              properties: {
+                items: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      question: { type: 'string' },
+                      answer: { type: 'string' }
+                    }
+                  }
+                }
+              }
+            }
           },
           required: ['writingTask']
         },

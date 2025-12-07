@@ -98,6 +98,8 @@ export class OpenAiService{
         ],
         response_format: zodResponseFormat(WritingTask, "task"),
       });
-    return completion.choices[0].message.content;
+      const output = JSON.parse(completion.choices[0].message.content || "{}");
+
+      return output;
   }
 }
