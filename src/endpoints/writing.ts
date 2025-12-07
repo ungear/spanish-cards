@@ -1,5 +1,21 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
+enum WritingTopic {
+  Presente = 'presente',
+  PretIndef = 'pret-indef',
+  PretImperf = 'pret-imperf',
+  Perf = 'perf',
+  Imperativo = 'imperativo'
+}
+
+const WritingTopicLabels: Record<WritingTopic, string> = {
+  [WritingTopic.Presente]: 'Presente',
+  [WritingTopic.PretIndef]: 'Pret. Indefinido',
+  [WritingTopic.PretImperf]: 'Pret. Imperfecto',
+  [WritingTopic.Perf]: 'Pret. Perfecto',
+  [WritingTopic.Imperativo]: 'Imperativo'
+};
+
 export default async function writingRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   // POST /api/writing
   fastify.post<{
@@ -66,6 +82,25 @@ export default async function writingRoutes(fastify: FastifyInstance, options: F
       fastify.log.error(`Error creating writing exercise: ${errorMessage}`);
       reply.status(500).send({ error: 'Failed to create writing exercise' });
     }
+  });
+
+  // GET /api/writing/getConfig
+  fastify.get('/api/writing/getConfig', {
+    schema: {
+      tags: ['writing'],
+      summary: 'Get writing config',
+      description: 'Get writing configuration',
+      response: {
+        200: {
+          type: 'object',
+          additionalProperties: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }, async (request, reply) => {
+    return WritingTopicLabels;
   });
 }
 
