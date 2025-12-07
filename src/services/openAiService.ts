@@ -9,6 +9,14 @@ const Translation = z.object({
   example: z.string(),
 });
 
+const WritingTaskItem = z.object({
+  question: z.string(),
+  answer: z.string(),
+});
+const WritingTask = z.object({
+  items: z.array(WritingTaskItem),
+});
+
 const TranslationSuggestions = z.object({ 
   suggestions: z.array(Translation),
 });
@@ -88,6 +96,7 @@ export class OpenAiService{
             content: "Topics: " + topicLabels.join(", "),
           },
         ],
+        response_format: zodResponseFormat(WritingTask, "task"),
       });
     return completion.choices[0].message.content;
   }
