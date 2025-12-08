@@ -6,7 +6,13 @@ export enum WritingTopic {
   PretIndef,
   PretImperf,
   Perf,
+  FuturoSimple,
   Imperativo,
+  Subjuntivo,
+  CondicinalPrimero,
+  CondicinalSegundo,
+  CondicionalTercero,
+  Pluscuamperfecto,
 }
 
 export const WritingTopicLabels: Record<WritingTopic, string> = {
@@ -14,7 +20,13 @@ export const WritingTopicLabels: Record<WritingTopic, string> = {
   [WritingTopic.PretIndef]: 'Pret. Indefinido',
   [WritingTopic.PretImperf]: 'Pret. Imperfecto',
   [WritingTopic.Perf]: 'Pret. Perfecto',
-  [WritingTopic.Imperativo]: 'Imperativo'
+  [WritingTopic.Imperativo]: 'Imperativo',
+  [WritingTopic.FuturoSimple]: 'Futuro Simple',
+  [WritingTopic.Subjuntivo]: 'Subjuntivo',
+  [WritingTopic.CondicinalPrimero]: 'Condicional Primero',
+  [WritingTopic.CondicinalSegundo]: 'Condicional Segundo',
+  [WritingTopic.CondicionalTercero]: 'Condicional Tercero',
+  [WritingTopic.Pluscuamperfecto]: 'Pluscuamperfecto'
 };
 
 /**
