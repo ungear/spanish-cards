@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { User } from '../typing/user.js';
+import { Card } from '../typing/card.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,6 +60,13 @@ export class DbService {
     const now = new Date().toISOString();
     return this.db.prepare('SELECT * FROM cards WHERE user_id = ? AND next_repeat < ? ORDER BY next_repeat ASC').all(userId, now);
   }
+
+  getRandomCards(userId: string, freshCardsCount: number, learnedCardsCount: number): Card[] {
+    const freshCards = this.db.prepare<unknown[], Card>('SELECT * FROM cards WHERE user_id = ? AND level <= 2 ORDER BY RANDOM() LIMIT ?').all(userId, freshCardsCount);
+    const learnedCards = this.db.prepare<unknown[], Card>('SELECT * FROM cards WHERE user_id = ? AND level > 2 ORDER BY RANDOM() LIMIT ?').all(userId, learnedCardsCount);
+    return [...freshCards, ...learnedCards];
+  }
+
   resetAllCards() {
     const now = new Date().toISOString();
     return this.db.prepare('UPDATE cards SET level = 0, next_repeat = datetime(?)').run(now);

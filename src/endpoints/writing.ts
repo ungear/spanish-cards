@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { OpenAiService } from '../services/openAiService.js';
+import { DbService } from '../services/dbService.js';
 
 export enum WritingTopic {
   Presente,
@@ -62,6 +63,8 @@ function convertToWritingTopics(topicStrings: string[]): WritingTopic[] {
 }
 
 export default async function writingRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
+  const dbService = new DbService();
+
   // POST /api/writing
   fastify.post<{
     Body: { topics: string[] }
@@ -143,9 +146,10 @@ export default async function writingRoutes(fastify: FastifyInstance, options: F
         reply.status(400).send({ error: errorMessage });
         return;
       }
-
+      const cardsToUse = await dbService.getRandomCards(request.userId as string, 5, 5);
+      const englishWordsToUse = cardsToUse.map(card => card.translation);
       const openAiService = new OpenAiService();
-      const writingTask = await openAiService.getWritingTask(validTopics);
+      const writingTask = await openAiService.getWritingTask(validTopics, englishWordsToUse);
       return { writingTask };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

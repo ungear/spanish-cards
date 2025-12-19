@@ -78,8 +78,10 @@ export class OpenAiService{
     return output;
   }
 
-  async getWritingTask(topics: WritingTopic[]){
+  async getWritingTask(topics: WritingTopic[], englishWordsToUse: string[]){
     const topicLabels = topics.map(topic => WritingTopicLabels[topic]);
+    const englishWordsToUseCombined = englishWordsToUse.join(", ").toLowerCase();
+    const topicLabelsCombined = topicLabels.join(", ").toLowerCase();
     const completion = await this.client.chat.completions.create({
       model: this.model,
       messages: [
@@ -89,11 +91,12 @@ export class OpenAiService{
             You are a Spanish teacher. Your task is to generate 10 sentences in English.
             The learner's task will be to compose translation for the sentences in Spanish. 
             The sentences should use the provided grammar topic.
+            Each sentence should contain one word from the provided list so that the user practice the specific words on top of the grammar topics.
             `
           },
           {
             role: "user",
-            content: "Topics: " + topicLabels.join(", "),
+            content: `Topics:  ${topicLabelsCombined}. Words to use: ${englishWordsToUseCombined}`,
           },
         ],
         response_format: zodResponseFormat(WritingTask, "task"),
