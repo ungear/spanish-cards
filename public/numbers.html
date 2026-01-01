@@ -1,0 +1,121 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanish Cards - Numbers</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+  
+  <main>
+    <nav class="flex justify-between bg-gray-200">
+      <ul class="flex space-x-4 p-4">
+        <li><a href="/list.html" class="text-blue-500">List</a></li>
+        <li><a href="/add.html" class="text-blue-500">Add</a></li>
+        <li><a href="/training.html" class="text-blue-500">Training</a></li>
+        <li><a href="/training.html?mode=reverse" class="text-blue-500">Reverse</a></li>
+        <li><a href="/writing.html" class="text-blue-500">Writing</a></li>
+        <li><a href="/numbers.html" class="text-blue-500">Numbers</a></li>
+      </ul>
+      <div id="current-user"></div>
+    </nav>
+    <section class="p-4">
+      <div class="max-w-md mx-auto mt-8">
+        <h1 class="text-3xl font-bold mb-6 text-center">Numbers Training</h1>
+        
+        <div class="text-center mb-6">
+          <button 
+            id="test-button" 
+            class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors"
+          >
+            Test
+          </button>
+        </div>
+        
+        <div id="result-container" class="hidden mt-8">
+          <div class="bg-gray-100 rounded-lg p-6 text-center">
+            <div class="mb-4">
+              <p class="text-sm text-gray-600 mb-2">Number:</p>
+              <p id="number-display" class="text-4xl font-bold text-gray-800"></p>
+            </div>
+            <div class="mt-4">
+              <audio id="audio-player" controls class="mx-auto">
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          </div>
+        </div>
+        
+        <div id="error-message" class="hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/currentUser.js"></script>
+  <script>
+    document.getElementById('test-button').addEventListener('click', async function() {
+      const button = this;
+      const resultContainer = document.getElementById('result-container');
+      const errorMessage = document.getElementById('error-message');
+      const numberDisplay = document.getElementById('number-display');
+      const audioPlayer = document.getElementById('audio-player');
+      
+      // Hide previous results and errors
+      resultContainer.classList.add('hidden');
+      errorMessage.classList.add('hidden');
+      
+      // Disable button and show loading state
+      button.disabled = true;
+      button.textContent = 'Loading...';
+      button.classList.add('opacity-50', 'cursor-not-allowed');
+      
+      try {
+        const response = await fetch('/api/number', {
+          method: 'GET',
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to generate number');
+        }
+        
+        const data = await response.json();
+        
+        // Display the number
+        numberDisplay.textContent = data.number;
+        
+        // Create audio blob from base64 and play it
+        const audioData = atob(data.audio);
+        const audioArray = new Uint8Array(audioData.length);
+        for (let i = 0; i < audioData.length; i++) {
+          audioArray[i] = audioData.charCodeAt(i);
+        }
+        const audioBlob = new Blob([audioArray], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        
+        audioPlayer.src = audioUrl;
+        
+        // Show result container
+        resultContainer.classList.remove('hidden');
+        
+        // Auto-play the audio
+        audioPlayer.play().catch(err => {
+          console.error('Error playing audio:', err);
+        });
+        
+      } catch (error) {
+        console.error('Error fetching number:', error);
+        errorMessage.textContent = `Error: ${error.message || 'Failed to generate number. Please try again.'}`;
+        errorMessage.classList.remove('hidden');
+      } finally {
+        // Re-enable button
+        button.disabled = false;
+        button.textContent = 'Test';
+        button.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    });
+  </script>
+</body>
+</html>
+

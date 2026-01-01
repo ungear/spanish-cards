@@ -105,4 +105,27 @@ export class OpenAiService{
 
       return output;
   }
+
+  async getNumberAudio(number: number): Promise<Buffer> {
+    // Available OpenAI TTS voices
+    const voices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'] as const;
+    // Randomly select a voice
+    const randomVoice = voices[Math.floor(Math.random() * voices.length)];
+    
+    // Generate audio using text-to-speech API - OpenAI TTS can handle numbers directly
+    const audioResponse = await this.client.audio.speech.create({
+      model: "gpt-4o-mini-tts",
+      voice: randomVoice,
+      input: number.toString(),
+      instructions: `
+        Pronounce the number in Spanish.
+        Pronounce correctly according to the Spanish pronunciation rules.
+        Pronounce the number in a natural way, not in a robotic way.`
+    });
+    
+    // Convert the response to a Buffer
+    const audioBuffer = Buffer.from(await audioResponse.arrayBuffer());
+    
+    return audioBuffer;
+  }
 }
