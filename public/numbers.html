@@ -36,7 +36,13 @@
           <div class="bg-gray-100 rounded-lg p-6 text-center">
             <div class="mb-4">
               <p class="text-sm text-gray-600 mb-2">Number:</p>
-              <p id="number-display" class="text-4xl font-bold text-gray-800"></p>
+              <p id="number-display" class="text-4xl font-bold text-gray-800 hidden"></p>
+              <button 
+                id="show-answer-button" 
+                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+              >
+                Show Answer
+              </button>
             </div>
             <div class="mt-4">
               <audio id="audio-player" controls class="mx-auto">
@@ -58,11 +64,16 @@
       const resultContainer = document.getElementById('result-container');
       const errorMessage = document.getElementById('error-message');
       const numberDisplay = document.getElementById('number-display');
+      const showAnswerButton = document.getElementById('show-answer-button');
       const audioPlayer = document.getElementById('audio-player');
       
       // Hide previous results and errors
       resultContainer.classList.add('hidden');
       errorMessage.classList.add('hidden');
+      
+      // Hide answer and show button
+      numberDisplay.classList.add('hidden');
+      showAnswerButton.classList.remove('hidden');
       
       // Disable button and show loading state
       button.disabled = true;
@@ -82,7 +93,7 @@
         
         const data = await response.json();
         
-        // Display the number
+        // Store the number but don't display it yet
         numberDisplay.textContent = data.number;
         
         // Create audio blob from base64 and play it
@@ -114,6 +125,16 @@
         button.textContent = 'Test';
         button.classList.remove('opacity-50', 'cursor-not-allowed');
       }
+    });
+    
+    // Show answer button click handler
+    document.getElementById('show-answer-button').addEventListener('click', function() {
+      const numberDisplay = document.getElementById('number-display');
+      const showAnswerButton = document.getElementById('show-answer-button');
+      
+      // Hide button and show answer
+      showAnswerButton.classList.add('hidden');
+      numberDisplay.classList.remove('hidden');
     });
   </script>
 </body>
