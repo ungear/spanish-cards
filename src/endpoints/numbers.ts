@@ -8,8 +8,18 @@ export default async function numbersRoutes(fastify: FastifyInstance, options: F
     schema: {
       tags: ['numbers'],
       summary: 'Get random number with audio',
-      description: 'Generate a random number from 1000 to 10000 and return its Spanish audio pronunciation',
+      description: 'Generate a random number based on the Range parameter (XX: 10-99, XXX: 100-999, XXXX: 1000-9999) and return its Spanish audio pronunciation',
       security: [{ cookieAuth: [] }],
+      querystring: {
+        type: 'object',
+        properties: {
+          Range: {
+            type: 'string',
+            enum: ['XX', 'XXX', 'XXXX'],
+            description: 'Number range: XX (10-99), XXX (100-999), XXXX (1000-9999)'
+          }
+        }
+      },
       response: {
         200: {
           type: 'object',
@@ -35,8 +45,31 @@ export default async function numbersRoutes(fastify: FastifyInstance, options: F
     }
   }, async (request, reply) => {
     try {
-      // Generate a random number from 1000 to 10000
-      const number = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000;
+      // Get the Range parameter from query string, default to 'XXXX' for backward compatibility
+      const range = (request.query as { Range?: string })?.Range || 'XXXX';
+      
+      // Generate a random number based on the range
+      let min: number, max: number;
+      switch (range) {
+        case 'XX':
+          min = 10;
+          max = 99;
+          break;
+        case 'XXX':
+          min = 100;
+          max = 999;
+          break;
+        case 'XXXX':
+          min = 1000;
+          max = 9999;
+          break;
+        default:
+          // Default to XXXX range if invalid value
+          min = 1000;
+          max = 9999;
+      }
+      
+      const number = Math.floor(Math.random() * (max - min + 1)) + min;
       
       // Get audio for the number
       const openAiService = new OpenAiService();
