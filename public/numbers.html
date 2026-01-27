@@ -54,6 +54,12 @@
               >
                 Show Answer
               </button>
+              <button 
+                id="play-again-button" 
+                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition-colors mt-2"
+              >
+                Play Again
+              </button>
             </div>
             <div class="mt-4">
               <audio id="audio-player" controls class="mx-auto">
@@ -153,6 +159,16 @@
       // Hide button and show answer
       showAnswerButton.classList.add('hidden');
       numberDisplay.classList.remove('hidden');
+    });
+    
+    // Play Again button click handler
+    document.getElementById('play-again-button').addEventListener('click', function() {
+      const audioPlayer = document.getElementById('audio-player');
+      // Reset audio to beginning and play again
+      audioPlayer.currentTime = 0;
+      audioPlayer.play().catch(err => {
+        console.error('Error playing audio:', err);
+      });
     });
   </script>
 </body>
