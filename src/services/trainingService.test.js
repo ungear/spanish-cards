@@ -4,7 +4,7 @@ import { levelupCard, leveldownCard } from './trainingService.js';
 describe('levelupCard', () => {
   it('should increment level from 0 to 1 and set repeat date to 1 day later', () => {
     const result = levelupCard(0);
-    expect(result.newLevel).toBe(111);
+    expect(result.newLevel).toBe(1);
     expect(result.newRepeatDate.getTime()).toBeGreaterThan(Date.now());
     expect(result.newRepeatDate.getTime()).toBeLessThan(Date.now() + 25 * 60 * 60 * 1000); // Within 25 hours
   });
