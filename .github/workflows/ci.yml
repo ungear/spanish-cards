@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test:run
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deployment
+        env:
+          DEPLOY_URL: ${{ vars.WEBSITE_DEPLOY_WEBHOOK_URL }}
+          HEADER_NAME: ${{ vars.WEBSITE_DEPLOY_WEBHOOK_HEADER_NAME }}
+          HEADER_VALUE: ${{ vars.WEBSITE_DEPLOY_WEBHOOK_HEADER_VALUE }}
+        run: |
+          curl -sS -f -X POST \
+            -H "${HEADER_NAME}: ${HEADER_VALUE}" \
+            "$DEPLOY_URL"
