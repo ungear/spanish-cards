@@ -107,25 +107,33 @@ export class OpenAiService{
   }
 
   async getNumberAudio(number: number): Promise<Buffer> {
-    // Available OpenAI TTS voices
+    const completion = await this.client.chat.completions.create({
+      model: this.model,
+      messages: [
+        {
+          role: "developer",
+          content: `You are a Spanish teacher. Your task is to write out a given number as a Spanish word.
+            Answer only the single Spanish text for the number, nothing else.`
+        },
+        {
+          role: "user",
+          content: number.toString(),
+        },
+      ],
+    });
+    const spanishText = completion.choices[0].message.content || number.toString();
+
     const voices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'] as const;
-    // Randomly select a voice
     const randomVoice = voices[Math.floor(Math.random() * voices.length)];
-    
-    // Generate audio using text-to-speech API - OpenAI TTS can handle numbers directly
+
     const audioResponse = await this.client.audio.speech.create({
       model: "gpt-4o-mini-tts",
       voice: randomVoice,
-      input: number.toString(),
-      instructions: `
-        Pronounce the number in Spanish.
-        Pronounce correctly according to the Spanish pronunciation rules.
-        Pronounce the number in a natural way, not in a robotic way.`
+      input: spanishText,
+      instructions: "Pronounce the text in Spanish naturally.",
     });
-    
-    // Convert the response to a Buffer
+
     const audioBuffer = Buffer.from(await audioResponse.arrayBuffer());
-    
     return audioBuffer;
   }
 }
