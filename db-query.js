@@ -11,10 +11,11 @@ if (!query) {
 }
 
 let queryToExecute = query;
+const isMigration = query.toLowerCase().startsWith("migration");
 
 // If the query is a migration, read the migration file and execute the query
 // expecting the parameter like "migration 2-add-users"
-if(query.toLowerCase().startsWith("migration")){
+if(isMigration){
     const migrationName = query.split(" ")[1];
     const migrationFile = `./db/${migrationName}.sql`;
     if(fs.existsSync(migrationFile)){
@@ -27,21 +28,26 @@ if(query.toLowerCase().startsWith("migration")){
 }
 
 try {
-    const stmt = db.prepare(queryToExecute);
     let results;
-
-    if(
-        queryToExecute.toLowerCase().startsWith("alter") 
-        || queryToExecute.toLowerCase().startsWith("update")
-        || queryToExecute.toLowerCase().startsWith("insert")
-        || queryToExecute.toLowerCase().startsWith("delete")
-        || queryToExecute.toLowerCase().startsWith("create")
-        || queryToExecute.toLowerCase().startsWith("drop")
-    ){
-        results = stmt.run();
-    } else{
-        results = stmt.all();
+    
+    if(isMigration){
+        results = db.exec(queryToExecute);
+    } else {
+        const stmt = db.prepare(queryToExecute);
+        if(
+            queryToExecute.toLowerCase().startsWith("alter") 
+            || queryToExecute.toLowerCase().startsWith("update")
+            || queryToExecute.toLowerCase().startsWith("insert")
+            || queryToExecute.toLowerCase().startsWith("delete")
+            || queryToExecute.toLowerCase().startsWith("create")
+            || queryToExecute.toLowerCase().startsWith("drop")
+        ){
+            results = stmt.run();
+        } else{
+            results = stmt.all();
+        }
     }
+
     console.log(JSON.stringify(results, null, 2));
 } catch (error) {
     console.error('Error executing query:', error.message);
