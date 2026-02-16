@@ -123,7 +123,7 @@ export class OpenAiService{
     });
     const spanishText = completion.choices[0].message.content || number.toString();
 
-    const voices = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'] as const;
+    const voices = ['alloy', 'ash', 'ballad', 'cedar', 'coral', 'echo', 'fable', 'marin', 'nova', 'onyx', 'sage', 'shimmer', 'verse'] as const;
     const randomVoice = voices[Math.floor(Math.random() * voices.length)];
 
     const audioResponse = await this.client.audio.speech.create({
