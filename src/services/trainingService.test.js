@@ -37,11 +37,25 @@ describe('levelupCard', () => {
     expect(result.newRepeatDate.getTime()).toBeLessThan(Date.now() + 28.5 * 24 * 60 * 60 * 1000);
   });
 
-  it('should keep level 5 and set repeat date to 28 days later', () => {
+  it('should increment level from 5 to 6 and set repeat date to 56 days later', () => {
     const result = levelupCard(5);
-    expect(result.newLevel).toBe(5);
-    expect(result.newRepeatDate.getTime()).toBeGreaterThan(Date.now() + 27.5 * 24 * 60 * 60 * 1000);
-    expect(result.newRepeatDate.getTime()).toBeLessThan(Date.now() + 28.5 * 24 * 60 * 60 * 1000);
+    expect(result.newLevel).toBe(6);
+    expect(result.newRepeatDate.getTime()).toBeGreaterThan(Date.now() + 55.5 * 24 * 60 * 60 * 1000);
+    expect(result.newRepeatDate.getTime()).toBeLessThan(Date.now() + 56.5 * 24 * 60 * 60 * 1000);
+  });
+
+  it('should increment level from 6 to 7 and set repeat date to 112 days later', () => {
+    const result = levelupCard(6);
+    expect(result.newLevel).toBe(7);
+    expect(result.newRepeatDate.getTime()).toBeGreaterThan(Date.now() + 111.5 * 24 * 60 * 60 * 1000);
+    expect(result.newRepeatDate.getTime()).toBeLessThan(Date.now() + 112.5 * 24 * 60 * 60 * 1000);
+  });
+
+  it('should keep level 7 and set repeat date to 112 days later', () => {
+    const result = levelupCard(7);
+    expect(result.newLevel).toBe(7);
+    expect(result.newRepeatDate.getTime()).toBeGreaterThan(Date.now() + 111.5 * 24 * 60 * 60 * 1000);
+    expect(result.newRepeatDate.getTime()).toBeLessThan(Date.now() + 112.5 * 24 * 60 * 60 * 1000);
   });
 });
 

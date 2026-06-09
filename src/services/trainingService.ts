@@ -24,8 +24,16 @@ export function levelupCard(level: number) {
       newLevel++;
       newRepeatDate = new Date(now.getTime() + (28 * 24 * 60 * 60 * 1000)); // +28 days
       break;
+    case 5:
+      newLevel++;
+      newRepeatDate = new Date(now.getTime() + (56 * 24 * 60 * 60 * 1000)); // +56 days
+      break;
+    case 6:
+      newLevel++;
+      newRepeatDate = new Date(now.getTime() + (112 * 24 * 60 * 60 * 1000)); // +112 days
+      break;
     default:
-      newRepeatDate = new Date(now.getTime() + (28 * 24 * 60 * 60 * 1000)); // +28 days
+      newRepeatDate = new Date(now.getTime() + (112 * 24 * 60 * 60 * 1000)); // +112 days
   }
   return {newLevel, newRepeatDate};
 }
